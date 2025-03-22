@@ -1,5 +1,5 @@
 
-import { Product } from '../types';
+import { Product, ProductAddition } from '../types';
 
 export const products: Product[] = [
   {
