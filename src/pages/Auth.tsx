@@ -8,10 +8,10 @@ import { motion } from 'framer-motion';
 import { useToast } from '../hooks/use-toast';
 import { cn } from '../lib/utils';
 
-type AuthTab = 'login' | 'register';
+type AuthTab = 'login' | 'register' | 'admin';
 
 const Auth = () => {
-  const { isAuthenticated, login, register, isLoading } = useAuth();
+  const { isAuthenticated, isAdmin, login, register, adminLogin, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<AuthTab>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +25,11 @@ const Auth = () => {
   
   // If already authenticated, redirect
   if (isAuthenticated) {
+    // Redirect admin to admin dashboard
+    if (isAdmin) {
+      return <Navigate to="/admin" replace />;
+    }
+    // Redirect regular user to previous page or home
     return <Navigate to={from} replace />;
   }
   
@@ -38,16 +43,22 @@ const Auth = () => {
           title: 'Вход выполнен успешно',
           description: 'Добро пожаловать в наш магазин!',
         });
-      } else {
+        navigate(from, { replace: true });
+      } else if (activeTab === 'register') {
         await register(email, password, name);
         toast({
           title: 'Регистрация завершена',
           description: 'Ваш аккаунт успешно создан!',
         });
+        navigate(from, { replace: true });
+      } else if (activeTab === 'admin') {
+        await adminLogin(email, password);
+        toast({
+          title: 'Вход администратора выполнен',
+          description: 'Добро пожаловать в панель управления!',
+        });
+        navigate('/admin', { replace: true });
       }
-      
-      // Redirect to the previous page or home
-      navigate(from, { replace: true });
     } catch (error) {
       toast({
         title: 'Ошибка',
@@ -67,7 +78,9 @@ const Auth = () => {
           className="bg-white rounded-xl border border-border shadow-sm p-8"
         >
           <h1 className="text-2xl font-serif text-center mb-6">
-            {activeTab === 'login' ? 'Вход в аккаунт' : 'Регистрация'}
+            {activeTab === 'login' ? 'Вход в аккаунт' : 
+             activeTab === 'register' ? 'Регистрация' : 
+             'Вход для администратора'}
           </h1>
           
           {/* Tab navigation */}
@@ -93,6 +106,17 @@ const Auth = () => {
               )}
             >
               Регистрация
+            </button>
+            <button
+              onClick={() => setActiveTab('admin')}
+              className={cn(
+                "flex-1 text-center py-2.5 border-b-2 transition-colors text-sm font-medium",
+                activeTab === 'admin'
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Админ
             </button>
           </div>
           
@@ -145,12 +169,22 @@ const Auth = () => {
               />
             </div>
             
+            {activeTab === 'admin' && (
+              <div className="text-sm text-muted-foreground">
+                <p>Для демо-версии:</p>
+                <p>Email: admin@coffee.com</p>
+                <p>Пароль: admin123</p>
+              </div>
+            )}
+            
             <Button
               type="submit"
               fullWidth
               isLoading={isLoading}
             >
-              {activeTab === 'login' ? 'Войти' : 'Зарегистрироваться'}
+              {activeTab === 'login' ? 'Войти' : 
+               activeTab === 'register' ? 'Зарегистрироваться' : 
+               'Войти как администратор'}
             </Button>
           </form>
         </motion.div>

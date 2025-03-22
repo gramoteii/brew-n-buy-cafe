@@ -1,4 +1,3 @@
-
 export type ProductSize = 'short' | 'tall' | 'grande' | 'venti';
 
 export type ProductCategory = 'coffee' | 'tea' | 'accessory' | 'gift';
@@ -50,10 +49,13 @@ export interface CartItem {
   totalPrice: number;
 }
 
+export type UserRole = 'user' | 'admin';
+
 export interface User {
   id: string;
   email: string;
   name: string;
+  role?: UserRole;
   orders: Order[];
 }
 

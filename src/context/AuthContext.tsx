@@ -5,8 +5,10 @@ import { User } from '../types';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  adminLogin: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
 }
@@ -47,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: '1',
         email,
         name: 'Уважаемый Клиент',
+        role: 'user',
         orders: []
       };
       
@@ -54,6 +57,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('coffee-shop-user', JSON.stringify(mockUser));
     } catch (error) {
       console.error('Login error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const adminLogin = async (email: string, password: string) => {
+    // In a real application, this would verify admin credentials
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Check if this is the admin email (in a real app, this would be verified on the server)
+      if (email === 'admin@coffee.com' && password === 'admin123') {
+        const adminUser: User = {
+          id: 'admin-1',
+          email,
+          name: 'Администратор',
+          role: 'admin',
+          orders: []
+        };
+        
+        setUser(adminUser);
+        localStorage.setItem('coffee-shop-user', JSON.stringify(adminUser));
+      } else {
+        throw new Error('Неверные учетные данные администратора');
+      }
+    } catch (error) {
+      console.error('Admin login error:', error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -72,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: Date.now().toString(),
         email,
         name,
+        role: 'user',
         orders: []
       };
       
@@ -94,9 +128,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider 
       value={{ 
         user, 
-        isAuthenticated: !!user, 
+        isAuthenticated: !!user,
+        isAdmin: user?.role === 'admin',
         isLoading, 
-        login, 
+        login,
+        adminLogin,
         register, 
         logout 
       }}
