@@ -13,8 +13,11 @@ import NotFound from "./pages/NotFound";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import Auth from "./pages/Auth";
-import Admin from "./pages/Admin"; // New admin page
+import Admin from "./pages/Admin";
+import Profile from "./pages/Profile";
+import Search from "./pages/Search";
 
 const queryClient = new QueryClient();
 
@@ -32,8 +35,11 @@ const App = () => (
                 <Route path="/products" element={<Products />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
                 <Route path="/auth" element={<Auth />} />
-                <Route path="/admin" element={<Admin />} /> {/* New admin route */}
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/search" element={<Search />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatePresence>

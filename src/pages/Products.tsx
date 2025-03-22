@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
 import Button from '../components/Button';
@@ -11,8 +11,8 @@ import { motion } from 'framer-motion';
 const Products = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const queryParams = new URLSearchParams(location.search);
-  const categoryParam = queryParams.get('category') as ProductCategory | null;
+  const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category') as ProductCategory | null;
   
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>(categoryParam || 'all');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
@@ -46,14 +46,24 @@ const Products = () => {
     setFilteredProducts(result);
   }, [selectedCategory, sortOption, products]);
   
-  // Update URL when filter changes
+  // Update category when URL changes
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (selectedCategory !== 'all') {
-      params.set('category', selectedCategory);
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    } else {
+      setSelectedCategory('all');
     }
-    navigate({ search: params.toString() }, { replace: true });
-  }, [selectedCategory, navigate]);
+  }, [categoryParam]);
+  
+  // Update URL when filter changes
+  const handleCategoryChange = (category: ProductCategory | 'all') => {
+    setSelectedCategory(category);
+    if (category === 'all') {
+      navigate('/products');
+    } else {
+      navigate(`/products?category=${category}`);
+    }
+  };
   
   // Category options
   const categories = [
@@ -97,7 +107,7 @@ const Products = () => {
             <div>
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value as ProductCategory | 'all')}
+                onChange={(e) => handleCategoryChange(e.target.value as ProductCategory | 'all')}
                 className="w-full min-w-[200px] p-2.5 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary bg-white"
               >
                 {categories.map(option => (
@@ -140,7 +150,7 @@ const Products = () => {
             </p>
             <Button 
               variant="outline"
-              onClick={() => setSelectedCategory('all')}
+              onClick={() => handleCategoryChange('all')}
             >
               Сбросить фильтры
             </Button>
