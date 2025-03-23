@@ -19,6 +19,7 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
+import Favorites from "./pages/Favorites";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/search" element={<Search />} />
+                  <Route path="/favorites" element={<Favorites />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AnimatePresence>

@@ -4,18 +4,37 @@ import { Link } from 'react-router-dom';
 import { Product } from '../types';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
+import { Heart, Star } from 'lucide-react';
+import { useFavorites } from '../hooks/useFavorites';
+import { toast } from '../hooks/use-toast';
 
 interface ProductCardProps {
   product: Product;
+  showFavoriteButton?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, showFavoriteButton = false }) => {
+  const { isInFavorites, toggleFavorite } = useFavorites();
+  const isFavorite = isInFavorites(product.id);
+  
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    toggleFavorite(product.id);
+    
+    toast({
+      title: isFavorite ? "Удалено из избранного" : "Добавлено в избранное",
+      description: `${product.name} ${isFavorite ? "удален из" : "добавлен в"} избранное`,
+    });
+  };
+  
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="product-card group"
+      className="product-card group relative"
     >
       <Link to={`/product/${product.id}`} className="block">
         {/* Product image with zoom effect */}
@@ -39,6 +58,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               </span>
             )}
           </div>
+          
+          {/* Favorite button */}
+          {showFavoriteButton && (
+            <button
+              onClick={handleToggleFavorite}
+              className={cn(
+                "absolute top-3 right-3 p-2 rounded-full transition-colors",
+                isFavorite ? "bg-white/90 text-red-500 hover:bg-white" : "bg-white/90 text-gray-400 hover:bg-white"
+              )}
+            >
+              <Heart size={20} fill={isFavorite ? "currentColor" : "none"} />
+            </button>
+          )}
         </div>
         
         {/* Product info */}
@@ -61,17 +93,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <div className="flex items-center mt-3">
             <div className="flex">
               {[1, 2, 3, 4, 5].map(star => (
-                <svg
+                <Star
                   key={star}
+                  size={16}
                   className={cn(
-                    "w-4 h-4",
-                    star <= Math.round(product.rating) ? "text-amber-500" : "text-gray-300"
+                    star <= Math.round(product.rating) ? "text-amber-500 fill-amber-500" : "text-gray-300"
                   )}
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
+                />
               ))}
             </div>
             <span className="text-xs text-muted-foreground ml-2">

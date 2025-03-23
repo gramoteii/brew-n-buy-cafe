@@ -3,18 +3,23 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Button from '../components/Button';
+import ReviewForm from '../components/ReviewForm';
+import ReviewList from '../components/ReviewList';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { products, productAdditions } from '../data/products';
+import { products, productAdditions, sizeTranslations } from '../data/products';
 import { Product, ProductSize } from '../types';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Coffee, ChevronLeft, Star } from 'lucide-react';
+import { ShoppingCart, Coffee, ChevronLeft, Star, Heart } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useFavorites } from '../hooks/useFavorites';
+import { toast } from '../hooks/use-toast';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const { favorites, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
   
   // Find product by ID
@@ -32,6 +37,9 @@ const ProductDetail = () => {
   // Calculate current price based on selected size
   const currentPrice = product?.variations?.find(v => v.size === selectedSize)?.price || product?.price || 0;
   
+  // Check if product is in favorites
+  const isFavorite = product ? favorites.includes(product.id) : false;
+
   // Reset customization when product changes
   useEffect(() => {
     if (product) {
@@ -61,6 +69,27 @@ const ProductDetail = () => {
         pahlava: pahlava
       }
     );
+
+    toast({
+      title: "Добавлено в корзину",
+      description: `${product.name} добавлен в корзину`,
+    });
+  };
+
+  const handleToggleFavorite = () => {
+    if (!product) return;
+    
+    if (!isAuthenticated) {
+      navigate('/auth', { state: { from: `/product/${id}` } });
+      return;
+    }
+    
+    toggleFavorite(product.id);
+    
+    toast({
+      title: isFavorite ? "Удалено из избранного" : "Добавлено в избранное",
+      description: `${product.name} ${isFavorite ? "удален из" : "добавлен в"} избранное`,
+    });
   };
   
   if (!product) {
@@ -110,11 +139,22 @@ const ProductDetail = () => {
             {/* Category tag */}
             <div className="bg-secondary inline-block px-3 py-1 rounded-full text-xs font-medium text-secondary-foreground mb-4">
               {product.category === 'coffee' ? 'Кофе' :
-               product.category === 'tea' ? 'Чай' :
+               product.category === 'tea' ? 'Сладости' :
                product.category === 'accessory' ? 'Аксессуары' : 'Подарки'}
             </div>
             
-            <h1 className="text-3xl md:text-4xl font-serif mb-2">{product.name}</h1>
+            <div className="flex justify-between items-start">
+              <h1 className="text-3xl md:text-4xl font-serif mb-2">{product.name}</h1>
+              <button 
+                onClick={handleToggleFavorite}
+                className={cn(
+                  "p-2 rounded-full transition-colors",
+                  isFavorite ? "text-red-500 hover:bg-red-100" : "text-gray-400 hover:bg-gray-100"
+                )}
+              >
+                <Heart size={24} fill={isFavorite ? "currentColor" : "none"} />
+              </button>
+            </div>
             
             {/* Rating */}
             <div className="flex items-center mb-4">
@@ -147,7 +187,7 @@ const ProductDetail = () => {
             {product.variations && product.variations.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-sm font-medium mb-3">Размер:</h3>
-                <div className="flex space-x-3">
+                <div className="flex flex-wrap gap-3">
                   {product.variations.map(variation => (
                     <button
                       key={variation.size}
@@ -159,9 +199,7 @@ const ProductDetail = () => {
                           : "border-border hover:border-primary/50"
                       )}
                     >
-                      {variation.size === 'short' ? 'Short' :
-                       variation.size === 'tall' ? 'Tall' :
-                       variation.size === 'grande' ? 'Grande' : 'Venti'}
+                      {sizeTranslations[variation.size] || variation.size}
                     </button>
                   ))}
                 </div>
@@ -179,7 +217,7 @@ const ProductDetail = () => {
                       +{sugar * productAdditions.sugar.price} ₽
                     </span>
                   </div>
-                  <div className="flex space-x-3">
+                  <div className="flex flex-wrap gap-3">
                     {[0, 1, 2, 3, 4, 5].map(value => (
                       <button
                         key={value}
@@ -205,7 +243,7 @@ const ProductDetail = () => {
                       +{pahlava * productAdditions.pahlava.price} ₽
                     </span>
                   </div>
-                  <div className="flex space-x-3">
+                  <div className="flex flex-wrap gap-3">
                     {[0, 1, 2, 3, 4, 5].map(value => (
                       <button
                         key={value}
@@ -322,9 +360,7 @@ const ProductDetail = () => {
                         {Object.entries(product.calories).map(([size, calories]) => (
                           <li key={size} className="flex justify-between border-b border-border/50 pb-1">
                             <span>
-                              {size === 'short' ? 'Short' :
-                               size === 'tall' ? 'Tall' :
-                               size === 'grande' ? 'Grande' : 'Venti'}
+                              {sizeTranslations[size] || size}
                             </span>
                             <span>{calories} ккал</span>
                           </li>
@@ -336,10 +372,8 @@ const ProductDetail = () => {
               </div>
             ) : (
               <div>
-                {/* Reviews will be implemented here */}
-                <p className="text-muted-foreground italic text-center py-6">
-                  Отзывы будут доступны в ближайшее время
-                </p>
+                <ReviewList productId={product.id} />
+                <ReviewForm productId={product.id} />
               </div>
             )}
           </div>

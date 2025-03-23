@@ -1,3 +1,4 @@
+
 import { Product, ProductAddition } from '../types';
 
 export const products: Product[] = [
@@ -419,4 +420,12 @@ export const productAdditions: Record<string, ProductAddition> = {
     price: 50,
     maxQuantity: 5
   }
+};
+
+// Size name translations
+export const sizeTranslations = {
+  short: 'Маленький',
+  tall: 'Стандартный',
+  grande: 'Большой',
+  venti: 'Очень большой'
 };

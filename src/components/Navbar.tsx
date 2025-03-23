@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Search, User, Menu, X } from 'lucide-react';
+import { ShoppingCart, Search, User, Menu, X, Coffee, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -32,7 +32,7 @@ const Navbar: React.FC = () => {
   const navItems = [
     { name: 'Главная', path: '/' },
     { name: 'Кофе', path: '/products?category=coffee' },
-    { name: 'Чай', path: '/products?category=tea' },
+    { name: 'Сладости', path: '/products?category=tea' },
     { name: 'Меню', path: '/products' },
   ];
 
@@ -48,8 +48,9 @@ const Navbar: React.FC = () => {
       <div className="container-custom">
         <nav className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-serif font-bold">
-            Кофе & Чай
+          <Link to="/" className="flex items-center text-2xl font-serif font-bold">
+            <Coffee size={24} className="mr-2" />
+            Coffee & Delights
           </Link>
 
           {/* Desktop Navigation */}
@@ -70,6 +71,10 @@ const Navbar: React.FC = () => {
 
           {/* Nav Icons */}
           <div className="flex items-center space-x-4">
+            <Link to="/favorites" className="p-2 rounded-full hover:bg-secondary transition-colors">
+              <Heart size={20} />
+            </Link>
+            
             <Link to="/search" className="p-2 rounded-full hover:bg-secondary transition-colors">
               <Search size={20} />
             </Link>
