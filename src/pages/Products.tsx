@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -18,16 +17,13 @@ const Products = () => {
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   
-  // Apply filters and sorting
   useEffect(() => {
     let result = [...products];
     
-    // Filter by category
     if (selectedCategory !== 'all') {
       result = result.filter(product => product.category === selectedCategory);
     }
     
-    // Apply sorting
     switch (sortOption) {
       case 'newest':
         result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -46,7 +42,6 @@ const Products = () => {
     setFilteredProducts(result);
   }, [selectedCategory, sortOption, products]);
   
-  // Update category when URL changes
   useEffect(() => {
     if (categoryParam) {
       setSelectedCategory(categoryParam);
@@ -55,7 +50,6 @@ const Products = () => {
     }
   }, [categoryParam]);
   
-  // Update URL when filter changes
   const handleCategoryChange = (category: ProductCategory | 'all') => {
     setSelectedCategory(category);
     if (category === 'all') {
@@ -65,16 +59,14 @@ const Products = () => {
     }
   };
   
-  // Category options
   const categories = [
     { value: 'all', label: 'Все категории' },
     { value: 'coffee', label: 'Кофе' },
-    { value: 'tea', label: 'Чай' },
+    { value: 'sweets', label: 'Сладости' },
     { value: 'accessory', label: 'Аксессуары' },
     { value: 'gift', label: 'Подарки' },
   ];
   
-  // Sort options
   const sortOptions = [
     { value: 'newest', label: 'Новые' },
     { value: 'oldest', label: 'Старые' },
@@ -94,7 +86,7 @@ const Products = () => {
             <h1 className="text-3xl md:text-4xl font-serif mb-2">
               {selectedCategory === 'all' ? 'Все продукты' : 
                selectedCategory === 'coffee' ? 'Кофе' :
-               selectedCategory === 'tea' ? 'Чай' :
+               selectedCategory === 'sweets' ? 'Сладости' :
                selectedCategory === 'accessory' ? 'Аксессуары' : 'Подарки'}
             </h1>
             <p className="text-muted-foreground">
@@ -103,7 +95,6 @@ const Products = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 mt-4 md:mt-0">
-            {/* Categories filter */}
             <div>
               <select
                 value={selectedCategory}
@@ -118,7 +109,6 @@ const Products = () => {
               </select>
             </div>
             
-            {/* Sort options */}
             <div>
               <select
                 value={sortOption}
@@ -135,7 +125,6 @@ const Products = () => {
           </div>
         </div>
         
-        {/* Products grid */}
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map(product => (

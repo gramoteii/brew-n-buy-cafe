@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -22,10 +21,8 @@ const ProductDetail = () => {
   const { favorites, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
   
-  // Find product by ID
   const product = products.find(p => p.id === id);
   
-  // States for product customization
   const [selectedSize, setSelectedSize] = useState<ProductSize | undefined>(
     product?.variations?.[0]?.size
   );
@@ -34,13 +31,10 @@ const ProductDetail = () => {
   const [pahlava, setPahlava] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
   
-  // Calculate current price based on selected size
   const currentPrice = product?.variations?.find(v => v.size === selectedSize)?.price || product?.price || 0;
   
-  // Check if product is in favorites
   const isFavorite = product ? favorites.includes(product.id) : false;
 
-  // Reset customization when product changes
   useEffect(() => {
     if (product) {
       setSelectedSize(product.variations?.[0]?.size);
@@ -50,12 +44,10 @@ const ProductDetail = () => {
     }
   }, [product]);
   
-  // Handle add to cart
   const handleAddToCart = () => {
     if (!product) return;
     
     if (!isAuthenticated) {
-      // Redirect to login if not authenticated
       navigate('/auth', { state: { from: `/product/${id}` } });
       return;
     }
@@ -112,7 +104,6 @@ const ProductDetail = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Breadcrumbs */}
         <div className="mb-8">
           <Link to="/products" className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
             <ChevronLeft size={16} className="mr-1" />
@@ -120,9 +111,7 @@ const ProductDetail = () => {
           </Link>
         </div>
         
-        {/* Product details */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product image */}
           <div className="rounded-xl overflow-hidden">
             <motion.img
               initial={{ opacity: 0, scale: 0.95 }}
@@ -134,12 +123,10 @@ const ProductDetail = () => {
             />
           </div>
           
-          {/* Product info */}
           <div>
-            {/* Category tag */}
             <div className="bg-secondary inline-block px-3 py-1 rounded-full text-xs font-medium text-secondary-foreground mb-4">
               {product.category === 'coffee' ? 'Кофе' :
-               product.category === 'tea' ? 'Сладости' :
+               product.category === 'sweets' ? 'Сладости' :
                product.category === 'accessory' ? 'Аксессуары' : 'Подарки'}
             </div>
             
@@ -156,7 +143,6 @@ const ProductDetail = () => {
               </button>
             </div>
             
-            {/* Rating */}
             <div className="flex items-center mb-4">
               <div className="flex text-amber-500">
                 {[1, 2, 3, 4, 5].map(star => (
@@ -173,17 +159,14 @@ const ProductDetail = () => {
               </span>
             </div>
             
-            {/* Price */}
             <div className="text-2xl font-serif font-medium mb-6">
               {currentPrice} ₽
             </div>
             
-            {/* Short description */}
             <p className="text-muted-foreground mb-8">
               {product.shortDescription}
             </p>
             
-            {/* Size selection for coffee/tea */}
             {product.variations && product.variations.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-sm font-medium mb-3">Размер:</h3>
@@ -206,10 +189,8 @@ const ProductDetail = () => {
               </div>
             )}
             
-            {/* Sugar and Pahlava options (only for coffee) */}
             {product.category === 'coffee' && product.customizable && (
               <>
-                {/* Sugar */}
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="text-sm font-medium">Кубики сахара:</h3>
@@ -235,7 +216,6 @@ const ProductDetail = () => {
                   </div>
                 </div>
                 
-                {/* Pahlava */}
                 <div className="mb-8">
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="text-sm font-medium">Пахлава:</h3>
@@ -263,7 +243,6 @@ const ProductDetail = () => {
               </>
             )}
             
-            {/* Quantity and Add to cart */}
             <div className="flex items-center space-x-4 mb-8">
               <div className="flex items-center border border-border rounded-lg">
                 <button
@@ -292,7 +271,6 @@ const ProductDetail = () => {
               </Button>
             </div>
             
-            {/* Total price */}
             <div className="bg-secondary p-4 rounded-lg mb-8">
               <div className="flex justify-between">
                 <span className="font-medium">Итого:</span>
@@ -306,7 +284,6 @@ const ProductDetail = () => {
           </div>
         </div>
         
-        {/* Additional information tabs */}
         <div className="mt-16">
           <div className="border-b border-border">
             <div className="flex space-x-8">
@@ -340,9 +317,7 @@ const ProductDetail = () => {
               <div>
                 <p className="mb-6">{product.description}</p>
                 
-                {/* Product details */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Ingredients */}
                   <div>
                     <h3 className="text-lg font-medium mb-3">Состав:</h3>
                     <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
@@ -352,8 +327,7 @@ const ProductDetail = () => {
                     </ul>
                   </div>
                   
-                  {/* Nutrition info (for coffee and tea) */}
-                  {(product.category === 'coffee' || product.category === 'tea') && (
+                  {(product.category === 'coffee' || product.category === 'sweets') && (
                     <div>
                       <h3 className="text-lg font-medium mb-3">Калорийность:</h3>
                       <ul className="space-y-1 text-muted-foreground">

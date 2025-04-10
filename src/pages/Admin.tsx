@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -355,7 +354,7 @@ const Admin = () => {
                       onChange={handleInputChange}
                     >
                       <option value="coffee">Кофе</option>
-                      <option value="tea">Чай</option>
+                      <option value="sweets">Сладости</option>
                       <option value="accessory">Аксессуары</option>
                       <option value="gift">Подарки</option>
                     </select>
@@ -463,7 +462,7 @@ const Admin = () => {
                       onChange={handleInputChange}
                     >
                       <option value="coffee">Кофе</option>
-                      <option value="tea">Чай</option>
+                      <option value="sweets">Сладости</option>
                       <option value="accessory">Аксессуары</option>
                       <option value="gift">Подарки</option>
                     </select>
@@ -551,7 +550,7 @@ const Admin = () => {
                         <TableCell className="font-medium">{product.name}</TableCell>
                         <TableCell>
                           {product.category === 'coffee' && 'Кофе'}
-                          {product.category === 'tea' && 'Чай'}
+                          {product.category === 'sweets' && 'Сладости'}
                           {product.category === 'accessory' && 'Аксессуары'}
                           {product.category === 'gift' && 'Подарки'}
                         </TableCell>
