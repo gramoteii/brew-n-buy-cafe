@@ -13,10 +13,12 @@ interface ReviewFormProps {
 
 const ReviewForm: React.FC<ReviewFormProps> = ({ productId }) => {
   const { isAuthenticated, user } = useAuth();
-  const { addReview } = useReviews();
+  const { addReview, hasUserReviewed } = useReviews();
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
+  
+  const userHasReviewed = hasUserReviewed(productId);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +27,15 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ productId }) => {
       toast({
         title: "Ошибка",
         description: "Вы должны войти в систему, чтобы оставить отзыв",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (userHasReviewed) {
+      toast({
+        title: "Ошибка",
+        description: "Вы уже оставили отзыв на этот товар",
         variant: "destructive",
       });
       return;
@@ -75,6 +86,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ productId }) => {
         <Button variant="outline" asChild>
           <a href="/auth">Войти</a>
         </Button>
+      </div>
+    );
+  }
+  
+  if (userHasReviewed) {
+    return (
+      <div className="mt-8 p-6 bg-secondary/50 rounded-lg text-center">
+        <p className="text-muted-foreground">Вы уже оставили отзыв на этот товар. Спасибо за ваш отзыв!</p>
       </div>
     );
   }

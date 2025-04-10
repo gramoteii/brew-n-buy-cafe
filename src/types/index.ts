@@ -1,6 +1,6 @@
 export type ProductSize = 'short' | 'tall' | 'grande' | 'venti';
 
-export type ProductCategory = 'coffee' | 'tea' | 'accessory' | 'gift';
+export type ProductCategory = 'coffee' | 'sweets' | 'accessory' | 'gift';
 
 export type ProductTag = 'new' | 'popular' | 'sale' | 'seasonal' | 'limited';
 

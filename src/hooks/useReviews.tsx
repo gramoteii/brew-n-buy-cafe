@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export interface Review {
   id: string;
@@ -13,6 +14,7 @@ export interface Review {
 
 export function useReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
+  const { user } = useAuth();
   
   // Load reviews from localStorage on initial render
   useEffect(() => {
@@ -46,10 +48,23 @@ export function useReviews() {
     return sum / productReviews.length;
   }, [getReviewsByProductId]);
   
+  // Check if user has already reviewed this product
+  const hasUserReviewed = useCallback((productId: string) => {
+    if (!user) return false;
+    return reviews.some(review => review.productId === productId && review.userId === user.id);
+  }, [reviews, user]);
+  
+  // Delete a review
+  const deleteReview = useCallback((reviewId: string) => {
+    setReviews(prev => prev.filter(review => review.id !== reviewId));
+  }, []);
+  
   return {
     reviews,
     addReview,
+    deleteReview,
     getReviewsByProductId,
-    getAverageRating
+    getAverageRating,
+    hasUserReviewed
   };
 }
