@@ -1,4 +1,5 @@
-export type ProductSize = 'short' | 'tall' | 'grande' | 'venti';
+
+export type ProductSize = 'small' | 'medium' | 'large';
 
 export type ProductCategory = 'coffee' | 'sweets' | 'accessory' | 'gift';
 
@@ -14,7 +15,7 @@ export interface ProductAddition {
 export interface ProductCustomization {
   size?: ProductSize;
   sugar?: number;
-  pahlava?: number;
+  parvarda?: number;
   additions?: Record<string, number>;
 }
 

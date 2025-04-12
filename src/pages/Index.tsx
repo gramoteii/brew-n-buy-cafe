@@ -77,7 +77,7 @@ const Index = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif mb-4">Почему выбирают нас</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Мы стремимся предоставить вам самые лучшие кофейные и чайные напитки, приготовленные с любовью и заботой.
+              Мы стремимся предоставить вам самые лучшие кофейные и сладкие десерты, приготовленные с любовью и заботой.
             </p>
           </div>
           
@@ -85,7 +85,7 @@ const Index = () => {
             {[
               {
                 title: "Высокое качество",
-                description: "Мы используем только лучшие зерна и листья, обжаренные и обработанные с особой тщательностью.",
+                description: "Мы используем только лучшие зерна и ингредиенты, обжаренные и обработанные с особой тщательностью.",
                 icon: (
                   <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -138,32 +138,6 @@ const Index = () => {
         title="Новинки" 
         products={newProducts} 
       />
-      
-      {/* CTA Section */}
-      <section className="my-12 py-16 bg-coffee-100 rounded-xl relative overflow-hidden">
-        <div className="container-custom relative z-10">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-serif mb-4">
-              Подпишитесь на наши обновления
-            </h2>
-            <p className="text-muted-foreground mb-8">
-              Получайте информацию о новых продуктах, акциях и специальных предложениях.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Ваш email"
-                className="flex-1 rounded-l-lg p-3 border border-r-0 border-border focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <Button className="sm:rounded-l-none">Подписаться</Button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-coffee-200 rounded-full opacity-30 transform translate-x-1/3 -translate-y-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-cream-200 rounded-full opacity-30 transform -translate-x-1/3 translate-y-1/3"></div>
-      </section>
     </Layout>
   );
 };

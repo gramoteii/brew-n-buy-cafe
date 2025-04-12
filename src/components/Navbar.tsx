@@ -32,7 +32,7 @@ const Navbar: React.FC = () => {
   const navItems = [
     { name: 'Главная', path: '/' },
     { name: 'Кофе', path: '/products?category=coffee' },
-    { name: 'Сладости', path: '/products?category=tea' },
+    { name: 'Сладости', path: '/products?category=sweets' },
     { name: 'Меню', path: '/products' },
   ];
 

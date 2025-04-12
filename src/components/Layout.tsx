@@ -24,14 +24,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-medium mb-4">Кофе & Чай</h3>
+              <h3 className="text-lg font-medium mb-4">Coffee & Delights</h3>
               <p className="text-muted-foreground text-sm">
                 Наслаждайтесь качественными напитками из свежих ингредиентов. Доставка по всему городу.
               </p>
             </div>
             <div>
               <h3 className="text-lg font-medium mb-4">Контакты</h3>
-              <p className="text-muted-foreground text-sm">Email: info@coffee-tea.com</p>
+              <p className="text-muted-foreground text-sm">Email: info@coffee-delights.com</p>
               <p className="text-muted-foreground text-sm">Телефон: +7 (123) 456-78-90</p>
             </div>
             <div>
@@ -41,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </div>
           <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>© 2023 Кофе & Чай. Все права защищены.</p>
+            <p>© 2025 Coffee & Delights. Все права защищены.</p>
           </div>
         </div>
       </footer>

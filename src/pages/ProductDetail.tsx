@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -28,7 +29,7 @@ const ProductDetail = () => {
   );
   const [quantity, setQuantity] = useState(1);
   const [sugar, setSugar] = useState(0);
-  const [pahlava, setPahlava] = useState(0);
+  const [parvarda, setParvarda] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
   
   const currentPrice = product?.variations?.find(v => v.size === selectedSize)?.price || product?.price || 0;
@@ -40,7 +41,7 @@ const ProductDetail = () => {
       setSelectedSize(product.variations?.[0]?.size);
       setQuantity(1);
       setSugar(0);
-      setPahlava(0);
+      setParvarda(0);
     }
   }, [product]);
   
@@ -58,7 +59,7 @@ const ProductDetail = () => {
       {
         size: selectedSize,
         sugar: sugar,
-        pahlava: pahlava
+        parvarda: parvarda
       }
     );
 
@@ -218,19 +219,19 @@ const ProductDetail = () => {
                 
                 <div className="mb-8">
                   <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-sm font-medium">Пахлава:</h3>
+                    <h3 className="text-sm font-medium">Парварда:</h3>
                     <span className="text-sm text-muted-foreground">
-                      +{pahlava * productAdditions.pahlava.price} ₽
+                      +{parvarda * productAdditions.parvarda.price} ₽
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-3">
                     {[0, 1, 2, 3, 4, 5].map(value => (
                       <button
                         key={value}
-                        onClick={() => setPahlava(value)}
+                        onClick={() => setParvarda(value)}
                         className={cn(
                           "w-10 h-10 rounded-lg border flex items-center justify-center transition-colors",
-                          pahlava === value
+                          parvarda === value
                             ? "border-primary bg-primary/5 text-primary"
                             : "border-border hover:border-primary/50"
                         )}
@@ -277,7 +278,7 @@ const ProductDetail = () => {
                 <span className="font-medium">
                   {(currentPrice + 
                     (sugar * productAdditions.sugar.price) + 
-                    (pahlava * productAdditions.pahlava.price)) * quantity} ₽
+                    (parvarda * productAdditions.parvarda.price)) * quantity} ₽
                 </span>
               </div>
             </div>
