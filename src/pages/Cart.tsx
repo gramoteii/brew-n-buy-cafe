@@ -25,9 +25,9 @@ const Cart = () => {
   };
   
   const formatSize = (size: ProductSize) => {
-    return size === 'short' ? 'Short' :
-           size === 'tall' ? 'Tall' :
-           size === 'grande' ? 'Grande' : 'Venti';
+    return size === 'small' ? 'Маленький' :
+           size === 'medium' ? 'Стандартный' :
+           size === 'large' ? 'Большой' : size;
   };
   
   return (
@@ -97,10 +97,10 @@ const Cart = () => {
                                     </div>
                                   )}
                                   
-                                  {item.customization.pahlava && item.customization.pahlava > 0 && (
+                                  {item.customization.parvarda && item.customization.parvarda > 0 && (
                                     <div className="flex justify-between text-muted-foreground">
-                                      <span>Пахлава (×{item.customization.pahlava})</span>
-                                      <span>+{item.customization.pahlava * productAdditions.pahlava.price} ₽</span>
+                                      <span>Парварда (×{item.customization.parvarda})</span>
+                                      <span>+{item.customization.parvarda * productAdditions.parvarda.price} ₽</span>
                                     </div>
                                   )}
                                 </div>

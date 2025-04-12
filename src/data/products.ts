@@ -201,6 +201,9 @@ export const products: Product[] = [
     tags: [],
     rating: 4.4,
     reviewCount: 45,
+    calories: {
+      small: 0,
+    },
     ingredients: ['Металл', 'Кофейные зерна'],
     customizable: false,
     inStock: true,
@@ -217,6 +220,9 @@ export const products: Product[] = [
     tags: ['popular'],
     rating: 4.6,
     reviewCount: 58,
+    calories: {
+      small: 0,
+    },
     ingredients: ['Керамика'],
     customizable: false,
     inStock: true,
@@ -233,6 +239,9 @@ export const products: Product[] = [
     tags: ['new'],
     rating: 4.7,
     reviewCount: 68,
+    calories: {
+      small: 0,
+    },
     ingredients: ['Кофе разных сортов'],
     customizable: false,
     inStock: true,
@@ -249,6 +258,9 @@ export const products: Product[] = [
     tags: ['popular'],
     rating: 4.8,
     reviewCount: 80,
+    calories: {
+      small: 0,
+    },
     ingredients: ['Зерна арабики'],
     customizable: false,
     inStock: true,
@@ -265,6 +277,9 @@ export const products: Product[] = [
     tags: [],
     rating: 4.5,
     reviewCount: 42,
+    calories: {
+      small: 0,
+    },
     ingredients: ['Сахар', 'Вода', 'Ароматизатор'],
     customizable: false,
     inStock: true,

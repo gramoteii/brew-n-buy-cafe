@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CartItem, Product, ProductCustomization } from '../types';
 import { useToast } from '../hooks/use-toast';
@@ -59,11 +58,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Add price of sugar
     const sugarPrice = (customization.sugar || 0) * 5;
     
-    // Add price of pahlava
-    const pahlavaPrice = (customization.pahlava || 0) * 50;
+    // Add price of parvarda
+    const parvardaPrice = (customization.parvarda || 0) * 50;
     
     // Calculate total
-    return (basePrice + sugarPrice + pahlavaPrice) * quantity;
+    return (basePrice + sugarPrice + parvardaPrice) * quantity;
   };
 
   const addToCart = (product: Product, quantity: number, customization: ProductCustomization) => {
