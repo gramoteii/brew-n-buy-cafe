@@ -21,7 +21,7 @@ import {
 import { Product, ProductCategory, Order } from '../types';
 import { products as allProducts } from '../data/products';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { useProducts } from '../hooks/use-products';
+import { useProducts } from '../hooks/useProducts';
 
 const Admin = () => {
   const { user, isAdmin, logout } = useAuth();
