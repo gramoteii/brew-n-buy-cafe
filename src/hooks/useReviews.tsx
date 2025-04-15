@@ -12,26 +12,40 @@ export interface Review {
   createdAt: string;
 }
 
+const STORAGE_KEY = 'product_reviews';
+
 export function useReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const { user } = useAuth();
   
   // Load reviews from localStorage on initial render
   useEffect(() => {
-    const savedReviews = localStorage.getItem('product_reviews');
+    const savedReviews = localStorage.getItem(STORAGE_KEY);
     if (savedReviews) {
-      setReviews(JSON.parse(savedReviews));
+      try {
+        const parsedReviews = JSON.parse(savedReviews);
+        setReviews(Array.isArray(parsedReviews) ? parsedReviews : []);
+      } catch (error) {
+        console.error('Error parsing reviews:', error);
+        setReviews([]);
+      }
     }
   }, []);
   
   // Save reviews to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('product_reviews', JSON.stringify(reviews));
+    if (reviews.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+    }
   }, [reviews]);
   
   // Add a new review
   const addReview = useCallback((review: Review) => {
-    setReviews(prev => [...prev, review]);
+    setReviews(prev => {
+      const newReviews = [...prev, review];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newReviews));
+      return newReviews;
+    });
   }, []);
   
   // Get reviews for a specific product
@@ -56,7 +70,11 @@ export function useReviews() {
   
   // Delete a review
   const deleteReview = useCallback((reviewId: string) => {
-    setReviews(prev => prev.filter(review => review.id !== reviewId));
+    setReviews(prev => {
+      const newReviews = prev.filter(review => review.id !== reviewId);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newReviews));
+      return newReviews;
+    });
   }, []);
   
   return {

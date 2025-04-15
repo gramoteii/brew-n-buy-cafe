@@ -21,11 +21,12 @@ import {
 import { Product, ProductCategory, Order } from '../types';
 import { products as allProducts } from '../data/products';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useProducts } from '../hooks/use-products';
 
 const Admin = () => {
   const { user, isAdmin, logout } = useAuth();
   const { toast } = useToast();
-  const [products, setProducts] = useState<Product[]>(allProducts);
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -105,8 +106,7 @@ const Admin = () => {
       createdAt: newProduct.createdAt || new Date().toISOString().split('T')[0],
     };
 
-    // Add the new product to the state
-    setProducts([...products, productToAdd]);
+    addProduct(productToAdd);
 
     // Reset the form
     setNewProduct({
@@ -155,29 +155,23 @@ const Admin = () => {
   const handleUpdateProduct = () => {
     if (!selectedProduct) return;
 
-    // Update the product in the state
-    const updatedProducts = products.map(p => {
-      if (p.id === selectedProduct.id) {
-        return {
-          ...p,
-          name: newProduct.name || p.name,
-          shortDescription: newProduct.shortDescription || p.shortDescription,
-          description: newProduct.description || p.description,
-          price: newProduct.price !== undefined ? newProduct.price : p.price,
-          category: newProduct.category || p.category,
-          image: newProduct.image || p.image,
-          tags: newProduct.tags || p.tags,
-          rating: newProduct.rating !== undefined ? newProduct.rating : p.rating,
-          reviewCount: newProduct.reviewCount !== undefined ? newProduct.reviewCount : p.reviewCount,
-          customizable: newProduct.customizable !== undefined ? newProduct.customizable : p.customizable,
-          ingredients: newProduct.ingredients || p.ingredients,
-          inStock: newProduct.inStock !== undefined ? newProduct.inStock : p.inStock,
-        };
-      }
-      return p;
-    });
+    const updatedProduct: Product = {
+      ...selectedProduct,
+      name: newProduct.name || selectedProduct.name,
+      shortDescription: newProduct.shortDescription || selectedProduct.shortDescription,
+      description: newProduct.description || selectedProduct.description,
+      price: newProduct.price !== undefined ? newProduct.price : selectedProduct.price,
+      category: newProduct.category || selectedProduct.category,
+      image: newProduct.image || selectedProduct.image,
+      tags: newProduct.tags || selectedProduct.tags,
+      rating: newProduct.rating !== undefined ? newProduct.rating : selectedProduct.rating,
+      reviewCount: newProduct.reviewCount !== undefined ? newProduct.reviewCount : selectedProduct.reviewCount,
+      customizable: newProduct.customizable !== undefined ? newProduct.customizable : selectedProduct.customizable,
+      ingredients: newProduct.ingredients || selectedProduct.ingredients,
+      inStock: newProduct.inStock !== undefined ? newProduct.inStock : selectedProduct.inStock,
+    };
 
-    setProducts(updatedProducts);
+    updateProduct(updatedProduct);
     setIsEditing(false);
     setSelectedProduct(null);
 
@@ -197,24 +191,10 @@ const Admin = () => {
       inStock: true,
       createdAt: new Date().toISOString().split('T')[0],
     });
-
-    // Show success message
-    toast({
-      title: 'Товар обновлен',
-      description: `Товар "${selectedProduct.name}" успешно обновлен.`,
-    });
   };
 
   const handleDeleteProduct = (productId: string) => {
-    // Remove the product from the state
-    const updatedProducts = products.filter(p => p.id !== productId);
-    setProducts(updatedProducts);
-
-    // Show success message
-    toast({
-      title: 'Товар удален',
-      description: `Товар успешно удален.`,
-    });
+    deleteProduct(productId);
   };
 
   const handleUpdateOrderStatus = (orderId: string, newStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') => {
