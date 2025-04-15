@@ -1,9 +1,8 @@
-
 export type ProductSize = 'small' | 'medium' | 'large';
 
 export type ProductCategory = 'coffee' | 'sweets' | 'accessory' | 'gift';
 
-export type ProductTag = 'new' | 'popular' | 'sale' | 'seasonal' | 'limited';
+export type ProductTag = 'new' | 'popular' | 'sale' | 'seasonal' | 'limited' | 'traditional';
 
 export interface ProductAddition {
   id: string;
