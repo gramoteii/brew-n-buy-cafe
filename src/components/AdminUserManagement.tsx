@@ -1,19 +1,30 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { User, Order } from '../types';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from './ui/table';
 import { Package, Check, Truck, Clock, X } from 'lucide-react';
 import Button from './Button';
+import { useToast } from '../hooks/use-toast';
 
 const AdminUserManagement = () => {
   const { getAllUsers, updateOrderStatus } = useAuth();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const { toast } = useToast();
   
+  // Get all users from auth context
   const users = getAllUsers();
   
+  // Calculate total orders across all users
   const totalOrders = users.reduce((total, user) => 
     total + (user.orders?.length || 0), 0);
+  
+  useEffect(() => {
+    // Select the first user by default if available
+    if (users.length > 0 && !selectedUser) {
+      setSelectedUser(users[0]);
+    }
+  }, [users, selectedUser]);
   
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -50,13 +61,19 @@ const AdminUserManagement = () => {
   };
   
   const handleUpdateStatus = (orderId: string, status: Order['status']) => {
-    updateOrderStatus(orderId, status);
-    // Refresh selected user to see the update
-    if (selectedUser) {
-      const updatedUser = getAllUsers().find(user => user.id === selectedUser.id);
-      if (updatedUser) {
+    const updatedUser = updateOrderStatus(orderId, status);
+    
+    // If the order was found and updated
+    if (updatedUser) {
+      // Refresh selected user to see the update
+      if (selectedUser && selectedUser.id === updatedUser.id) {
         setSelectedUser(updatedUser);
       }
+
+      toast({
+        title: 'Статус обновлен',
+        description: `Статус заказа изменен на ${getStatusText(status)}`,
+      });
     }
   };
   
@@ -82,25 +99,31 @@ const AdminUserManagement = () => {
           </div>
           
           <div className="divide-y divide-border max-h-[500px] overflow-y-auto">
-            {users.map(user => (
-              <button
-                key={user.id}
-                className={`w-full text-left p-4 hover:bg-secondary/50 transition-colors ${
-                  selectedUser?.id === user.id ? 'bg-secondary/80' : ''
-                }`}
-                onClick={() => setSelectedUser(user)}
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+            {users.length > 0 ? (
+              users.map(user => (
+                <button
+                  key={user.id}
+                  className={`w-full text-left p-4 hover:bg-secondary/50 transition-colors ${
+                    selectedUser?.id === user.id ? 'bg-secondary/80' : ''
+                  }`}
+                  onClick={() => setSelectedUser(user)}
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-medium">{user.name}</p>
+                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {user.orders?.length || 0} заказов
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {user.orders?.length || 0} заказов
-                  </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              ))
+            ) : (
+              <div className="p-6 text-center text-muted-foreground">
+                Пока нет зарегистрированных пользователей
+              </div>
+            )}
           </div>
         </div>
         

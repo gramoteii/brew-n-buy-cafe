@@ -38,6 +38,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
+        
+        // Make sure orders array exists
+        if (!parsedUser.orders) {
+          parsedUser.orders = [];
+        }
+        
         setUser(parsedUser);
       } catch (error) {
         console.error('Error parsing user:', error);
@@ -57,6 +63,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const existingUser = findUserByEmail(email);
       
       if (existingUser) {
+        // Ensure orders array exists
+        if (!existingUser.orders) {
+          existingUser.orders = [];
+        }
+        
         // In a real app, we would verify the password here
         setUser(existingUser);
         localStorage.setItem('coffee-shop-user', JSON.stringify(existingUser));
@@ -159,6 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       orders: [...(user.orders || []), order]
     };
     
+    // Update the user in local storage and state
     updateUser(updatedUser);
     setUser(updatedUser);
     localStorage.setItem('coffee-shop-user', JSON.stringify(updatedUser));
@@ -166,20 +178,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Update the status of an existing order
   const updateOrderStatus = (orderId: string, status: Order['status']) => {
-    if (!user) return;
+    // Get all users to find which user has the order
+    const allUsers = users;
+    let updatedUserWithOrder = null;
     
-    const updatedOrders = user.orders.map(order => 
-      order.id === orderId ? { ...order, status } : order
-    );
+    // Look through all users to find who owns this order
+    for (const currentUser of allUsers) {
+      if (!currentUser.orders) continue;
+      
+      const orderIndex = currentUser.orders.findIndex(order => order.id === orderId);
+      
+      if (orderIndex !== -1) {
+        // Found the user with this order
+        const updatedOrders = [...currentUser.orders];
+        updatedOrders[orderIndex] = {
+          ...updatedOrders[orderIndex],
+          status
+        };
+        
+        const updatedUser = {
+          ...currentUser,
+          orders: updatedOrders
+        };
+        
+        // Update the user in our database
+        updateUser(updatedUser);
+        
+        // If this is the currently logged in user, update their state too
+        if (user && user.id === currentUser.id) {
+          setUser(updatedUser);
+          localStorage.setItem('coffee-shop-user', JSON.stringify(updatedUser));
+        }
+        
+        updatedUserWithOrder = updatedUser;
+        break;
+      }
+    }
     
-    const updatedUser = {
-      ...user,
-      orders: updatedOrders
-    };
-    
-    updateUser(updatedUser);
-    setUser(updatedUser);
-    localStorage.setItem('coffee-shop-user', JSON.stringify(updatedUser));
+    return updatedUserWithOrder;
   };
   
   // Get all registered users (for admin panel)

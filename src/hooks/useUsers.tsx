@@ -11,7 +11,12 @@ export function useUsers() {
     if (savedUsers) {
       try {
         const parsedUsers = JSON.parse(savedUsers);
-        setUsers(Array.isArray(parsedUsers) ? parsedUsers : []);
+        // Ensure each user has an orders array
+        const usersWithOrders = parsedUsers.map((user: User) => ({
+          ...user,
+          orders: user.orders || []
+        }));
+        setUsers(Array.isArray(parsedUsers) ? usersWithOrders : []);
       } catch (error) {
         console.error('Error parsing users:', error);
         setUsers([]);
@@ -33,7 +38,13 @@ export function useUsers() {
       const existingUser = prev.find(u => u.id === user.id || u.email === user.email);
       if (existingUser) return prev;
       
-      return [...prev, user];
+      // Ensure the new user has an orders array
+      const userWithOrders = {
+        ...user,
+        orders: user.orders || []
+      };
+      
+      return [...prev, userWithOrders];
     });
   };
   
