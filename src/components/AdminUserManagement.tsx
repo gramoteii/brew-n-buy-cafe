@@ -153,7 +153,7 @@ const AdminUserManagement = () => {
                           <div className="flex flex-wrap gap-2">
                             <Button 
                               size="sm" 
-                              variant={order.status === 'pending' ? 'default' : 'outline'}
+                              variant={order.status === 'pending' ? 'primary' : 'outline'}
                               onClick={() => handleUpdateStatus(order.id, 'pending')}
                             >
                               <Clock size={14} className="mr-1" />
@@ -161,7 +161,7 @@ const AdminUserManagement = () => {
                             </Button>
                             <Button 
                               size="sm" 
-                              variant={order.status === 'processing' ? 'default' : 'outline'}
+                              variant={order.status === 'processing' ? 'primary' : 'outline'}
                               onClick={() => handleUpdateStatus(order.id, 'processing')}
                             >
                               <Package size={14} className="mr-1" />
@@ -169,7 +169,7 @@ const AdminUserManagement = () => {
                             </Button>
                             <Button 
                               size="sm" 
-                              variant={order.status === 'shipped' ? 'default' : 'outline'}
+                              variant={order.status === 'shipped' ? 'primary' : 'outline'}
                               onClick={() => handleUpdateStatus(order.id, 'shipped')}
                             >
                               <Truck size={14} className="mr-1" />
@@ -177,7 +177,7 @@ const AdminUserManagement = () => {
                             </Button>
                             <Button 
                               size="sm" 
-                              variant={order.status === 'delivered' ? 'default' : 'outline'}
+                              variant={order.status === 'delivered' ? 'primary' : 'outline'}
                               onClick={() => handleUpdateStatus(order.id, 'delivered')}
                             >
                               <Check size={14} className="mr-1" />
@@ -185,7 +185,7 @@ const AdminUserManagement = () => {
                             </Button>
                             <Button 
                               size="sm" 
-                              variant={order.status === 'cancelled' ? 'destructive' : 'outline'}
+                              variant={order.status === 'cancelled' ? 'secondary' : 'outline'}
                               onClick={() => handleUpdateStatus(order.id, 'cancelled')}
                             >
                               <X size={14} className="mr-1" />
