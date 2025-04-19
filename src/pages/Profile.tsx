@@ -17,30 +17,6 @@ const Profile = () => {
     return null;
   }
   
-  // Mock orders for display
-  const mockOrders = [
-    {
-      id: 'ORD-' + Date.now(),
-      createdAt: new Date().toISOString(),
-      status: 'processing',
-      totalPrice: 1250,
-      items: [
-        { name: 'Пахлава, 500г.', quantity: 1, price: 750 },
-        { name: 'Матча Латте', quantity: 2, price: 250 },
-      ]
-    },
-    {
-      id: 'ORD-' + (Date.now() - 1000000),
-      createdAt: new Date(Date.now() - 86400000 * 30).toISOString(),
-      status: 'delivered',
-      totalPrice: 890,
-      items: [
-        { name: 'Капучино', quantity: 2, price: 300 },
-        { name: 'Рахат-лукум, 700г.', quantity: 1, price: 290 },
-      ]
-    }
-  ];
-  
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -186,9 +162,9 @@ const Profile = () => {
                   <h2 className="text-xl font-medium">История заказов</h2>
                 </div>
                 
-                {mockOrders.length > 0 ? (
+                {user.orders && user.orders.length > 0 ? (
                   <div className="divide-y divide-border">
-                    {mockOrders.map((order) => (
+                    {user.orders.map((order) => (
                       <div key={order.id} className="p-6">
                         <div className="flex justify-between items-start mb-4">
                           <div>
@@ -211,8 +187,8 @@ const Profile = () => {
                           <ul className="space-y-2">
                             {order.items.map((item, index) => (
                               <li key={index} className="text-sm flex justify-between">
-                                <span>{item.name} × {item.quantity}</span>
-                                <span>{item.price * item.quantity} ₽</span>
+                                <span>{item.product.name} × {item.quantity}</span>
+                                <span>{item.totalPrice} ₽</span>
                               </li>
                             ))}
                           </ul>

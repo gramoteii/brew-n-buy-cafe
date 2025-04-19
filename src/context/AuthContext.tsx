@@ -1,6 +1,7 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { User } from '../types';
+import { User, Order } from '../types';
+import { useUsers } from '../hooks/useUsers';
 
 interface AuthContextType {
   user: User | null;
@@ -11,6 +12,9 @@ interface AuthContextType {
   adminLogin: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
+  updateUserOrders: (order: Order) => void;
+  updateOrderStatus: (orderId: string, status: Order['status']) => void;
+  getAllUsers: () => User[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,35 +30,50 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { users, addUser, updateUser, findUserByEmail } = useUsers();
 
   useEffect(() => {
     // Check if user data exists in localStorage
     const storedUser = localStorage.getItem('coffee-shop-user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Error parsing user:', error);
+        setUser(null);
+      }
     }
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
-    // In a real application, this would call an API
-    // For demo purposes, we're creating a mock user
     setIsLoading(true);
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Mock user data
-      const mockUser: User = {
-        id: '1',
-        email,
-        name: 'Уважаемый Клиент',
-        role: 'user',
-        orders: []
-      };
+      // Check if user exists in our "database"
+      const existingUser = findUserByEmail(email);
       
-      setUser(mockUser);
-      localStorage.setItem('coffee-shop-user', JSON.stringify(mockUser));
+      if (existingUser) {
+        // In a real app, we would verify the password here
+        setUser(existingUser);
+        localStorage.setItem('coffee-shop-user', JSON.stringify(existingUser));
+      } else {
+        // For demo purposes, create a new user if not found
+        const newUser: User = {
+          id: Date.now().toString(),
+          email,
+          name: 'Уважаемый Клиент',
+          role: 'user',
+          orders: []
+        };
+        
+        addUser(newUser);
+        setUser(newUser);
+        localStorage.setItem('coffee-shop-user', JSON.stringify(newUser));
+      }
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -64,13 +83,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const adminLogin = async (email: string, password: string) => {
-    // In a real application, this would verify admin credentials
     setIsLoading(true);
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Check if this is the admin email (in a real app, this would be verified on the server)
+      // Check if this is the admin email
       if (email === 'admin@coffee.com' && password === 'admin123') {
         const adminUser: User = {
           id: 'admin-1',
@@ -80,6 +98,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           orders: []
         };
         
+        // Make sure admin exists in our user list
+        addUser(adminUser);
         setUser(adminUser);
         localStorage.setItem('coffee-shop-user', JSON.stringify(adminUser));
       } else {
@@ -94,14 +114,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = async (email: string, password: string, name: string) => {
-    // In a real application, this would call an API
     setIsLoading(true);
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Mock user data
-      const mockUser: User = {
+      // Check if user already exists
+      const existingUser = findUserByEmail(email);
+      if (existingUser) {
+        throw new Error('Пользователь с таким email уже существует');
+      }
+      
+      // Create new user
+      const newUser: User = {
         id: Date.now().toString(),
         email,
         name,
@@ -109,8 +134,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         orders: []
       };
       
-      setUser(mockUser);
-      localStorage.setItem('coffee-shop-user', JSON.stringify(mockUser));
+      addUser(newUser);
+      setUser(newUser);
+      localStorage.setItem('coffee-shop-user', JSON.stringify(newUser));
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -123,6 +149,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     localStorage.removeItem('coffee-shop-user');
   };
+  
+  // Add a new order to the user's order history
+  const updateUserOrders = (order: Order) => {
+    if (!user) return;
+    
+    const updatedUser = {
+      ...user,
+      orders: [...(user.orders || []), order]
+    };
+    
+    updateUser(updatedUser);
+    setUser(updatedUser);
+    localStorage.setItem('coffee-shop-user', JSON.stringify(updatedUser));
+  };
+  
+  // Update the status of an existing order
+  const updateOrderStatus = (orderId: string, status: Order['status']) => {
+    if (!user) return;
+    
+    const updatedOrders = user.orders.map(order => 
+      order.id === orderId ? { ...order, status } : order
+    );
+    
+    const updatedUser = {
+      ...user,
+      orders: updatedOrders
+    };
+    
+    updateUser(updatedUser);
+    setUser(updatedUser);
+    localStorage.setItem('coffee-shop-user', JSON.stringify(updatedUser));
+  };
+  
+  // Get all registered users (for admin panel)
+  const getAllUsers = () => {
+    return users;
+  };
 
   return (
     <AuthContext.Provider 
@@ -134,7 +197,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         adminLogin,
         register, 
-        logout 
+        logout,
+        updateUserOrders,
+        updateOrderStatus,
+        getAllUsers
       }}
     >
       {children}
