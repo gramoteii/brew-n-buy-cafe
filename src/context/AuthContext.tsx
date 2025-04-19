@@ -13,7 +13,7 @@ interface AuthContextType {
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
   updateUserOrders: (order: Order) => void;
-  updateOrderStatus: (orderId: string, status: Order['status']) => void;
+  updateOrderStatus: (orderId: string, status: Order['status']) => User | null;
   getAllUsers: () => User[];
 }
 
@@ -180,7 +180,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateOrderStatus = (orderId: string, status: Order['status']) => {
     // Get all users to find which user has the order
     const allUsers = users;
-    let updatedUserWithOrder = null;
+    let updatedUserWithOrder: User | null = null;
     
     // Look through all users to find who owns this order
     for (const currentUser of allUsers) {

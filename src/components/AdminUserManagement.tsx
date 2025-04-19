@@ -61,13 +61,13 @@ const AdminUserManagement = () => {
   };
   
   const handleUpdateStatus = (orderId: string, status: Order['status']) => {
-    const updatedUser = updateOrderStatus(orderId, status);
+    const result = updateOrderStatus(orderId, status);
     
-    // If the order was found and updated
-    if (updatedUser) {
-      // Refresh selected user to see the update
-      if (selectedUser && selectedUser.id === updatedUser.id) {
-        setSelectedUser(updatedUser);
+    // Check if we have an updated user
+    if (result) {
+      // If the selected user was updated, refresh the selected user
+      if (selectedUser && result.id === selectedUser.id) {
+        setSelectedUser(result);
       }
 
       toast({
