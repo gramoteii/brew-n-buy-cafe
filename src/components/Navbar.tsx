@@ -29,6 +29,26 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
+  // Check if a path is active, accounting for query parameters
+  const isPathActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    
+    if (path.includes('?')) {
+      const [basePath, queryPart] = path.split('?');
+      const [paramName, paramValue] = queryPart.split('=');
+      
+      if (location.pathname === basePath) {
+        const searchParams = new URLSearchParams(location.search);
+        return searchParams.get(paramName) === paramValue;
+      }
+      return false;
+    }
+    
+    return location.pathname === path;
+  };
+
   const navItems = [
     { name: 'Главная', path: '/' },
     { name: 'Кофе', path: '/products?category=coffee' },
@@ -61,7 +81,7 @@ const Navbar: React.FC = () => {
                 to={item.path}
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-primary",
-                  location.pathname === item.path ? "text-primary" : "text-foreground"
+                  isPathActive(item.path) ? "text-primary" : "text-foreground"
                 )}
               >
                 {item.name}
@@ -119,7 +139,7 @@ const Navbar: React.FC = () => {
                   to={item.path}
                   className={cn(
                     "block py-2 text-sm font-medium",
-                    location.pathname === item.path ? "text-primary" : "text-foreground"
+                    isPathActive(item.path) ? "text-primary" : "text-foreground"
                   )}
                 >
                   {item.name}

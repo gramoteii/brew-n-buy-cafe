@@ -9,9 +9,16 @@ export function useFavorites() {
   // Load favorites from localStorage on initial render
   useEffect(() => {
     if (isAuthenticated && user) {
-      const savedFavorites = localStorage.getItem(`favorites_${user.id}`);
+      const storageKey = `favorites_${user.id}`;
+      const savedFavorites = localStorage.getItem(storageKey);
       if (savedFavorites) {
-        setFavorites(JSON.parse(savedFavorites));
+        try {
+          const parsedFavorites = JSON.parse(savedFavorites);
+          setFavorites(Array.isArray(parsedFavorites) ? parsedFavorites : []);
+        } catch (error) {
+          console.error('Error parsing favorites:', error);
+          setFavorites([]);
+        }
       }
     }
   }, [isAuthenticated, user]);
@@ -20,13 +27,19 @@ export function useFavorites() {
   const toggleFavorite = (productId: string) => {
     if (!isAuthenticated || !user) return;
     
+    const storageKey = `favorites_${user.id}`;
+    
     setFavorites(prev => {
-      const newFavorites = prev.includes(productId)
+      // Check if the product is already in favorites
+      const isAlreadyFavorite = prev.includes(productId);
+      
+      // Create a new array based on the action (add or remove)
+      const newFavorites = isAlreadyFavorite
         ? prev.filter(id => id !== productId)
         : [...prev, productId];
       
       // Save to localStorage
-      localStorage.setItem(`favorites_${user.id}`, JSON.stringify(newFavorites));
+      localStorage.setItem(storageKey, JSON.stringify(newFavorites));
       return newFavorites;
     });
   };

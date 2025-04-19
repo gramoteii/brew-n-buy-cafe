@@ -21,6 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showFavoriteButton =
     e.preventDefault();
     e.stopPropagation();
     
+    // Only toggle the favorite status for the current product
     toggleFavorite(product.id);
     
     toast({
@@ -67,6 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showFavoriteButton =
                 "absolute top-3 right-3 p-2 rounded-full transition-colors",
                 isFavorite ? "bg-white/90 text-red-500 hover:bg-white" : "bg-white/90 text-gray-400 hover:bg-white"
               )}
+              aria-label={isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
             >
               <Heart size={20} fill={isFavorite ? "currentColor" : "none"} />
             </button>

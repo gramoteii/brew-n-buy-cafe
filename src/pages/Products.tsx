@@ -5,19 +5,21 @@ import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
 import Button from '../components/Button';
 import { Product, ProductCategory, SortOption } from '../types';
-import { products } from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 import { motion } from 'framer-motion';
 
 const Products = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { products } = useProducts();
   const categoryParam = searchParams.get('category') as ProductCategory | null;
   
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>(categoryParam || 'all');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   
+  // Apply proper sorting and filtering
   useEffect(() => {
     let result = [...products];
     
@@ -25,24 +27,35 @@ const Products = () => {
       result = result.filter(product => product.category === selectedCategory);
     }
     
+    // First, prioritize new products if they exist
+    const newProducts = result.filter(product => product.tags.includes('new'));
+    const otherProducts = result.filter(product => !product.tags.includes('new'));
+    
+    // Then apply selected sort to each group
     switch (sortOption) {
       case 'newest':
-        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        newProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        otherProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
       case 'oldest':
-        result.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        newProducts.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        otherProducts.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
         break;
       case 'price-asc':
-        result.sort((a, b) => a.price - b.price);
+        newProducts.sort((a, b) => a.price - b.price);
+        otherProducts.sort((a, b) => a.price - b.price);
         break;
       case 'price-desc':
-        result.sort((a, b) => b.price - a.price);
+        newProducts.sort((a, b) => b.price - a.price);
+        otherProducts.sort((a, b) => b.price - a.price);
         break;
     }
     
-    setFilteredProducts(result);
+    // Combine the two arrays, with new products first
+    setFilteredProducts([...newProducts, ...otherProducts]);
   }, [selectedCategory, sortOption, products]);
   
+  // Update category from URL params
   useEffect(() => {
     if (categoryParam) {
       setSelectedCategory(categoryParam);
@@ -81,6 +94,7 @@ const Products = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
+        className="mt-24" // Added padding to avoid navbar overlap
       >
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
@@ -129,7 +143,7 @@ const Products = () => {
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} showFavoriteButton />
             ))}
           </div>
         ) : (
