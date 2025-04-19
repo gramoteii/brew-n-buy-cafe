@@ -1,80 +1,64 @@
-export type ProductSize = 'small' | 'medium' | 'large';
-
-export type ProductCategory = 'coffee' | 'sweets' | 'accessory' | 'gift';
-
-export type ProductTag = 'new' | 'popular' | 'sale' | 'seasonal' | 'limited' | 'traditional';
-
-export interface ProductAddition {
-  id: string;
-  name: string;
-  price: number;
-  maxQuantity: number;
-}
-
-export interface ProductCustomization {
-  size?: ProductSize;
-  sugar?: number;
-  parvarda?: number;
-  additions?: Record<string, number>;
-}
-
 export interface Product {
   id: string;
   name: string;
-  description: string;
   shortDescription: string;
+  description: string;
   price: number;
   category: ProductCategory;
   image: string;
-  tags: ProductTag[];
+  tags: string[];
   rating: number;
   reviewCount: number;
-  variations?: {
-    size: ProductSize;
-    price: number;
-  }[];
   customizable: boolean;
-  calories: {
-    [key in ProductSize]?: number;
-  };
+  calories: Calories;
   ingredients: string[];
   inStock: boolean;
   createdAt: string;
 }
 
+export type ProductCategory = 'coffee' | 'sweets' | 'accessory' | 'gift';
+
+export interface Calories {
+  total: number;
+  fat: number;
+  protein: number;
+  carbs: number;
+}
+
 export interface CartItem {
   product: Product;
   quantity: number;
-  customization: ProductCustomization;
   totalPrice: number;
 }
 
-export type UserRole = 'user' | 'admin';
+export interface OrderItem {
+  product: Product;
+  quantity: number;
+  totalPrice: number;
+}
+
+export interface Order {
+  id: string;
+  items: OrderItem[];
+  totalPrice: number;
+  createdAt: string;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+}
 
 export interface User {
   id: string;
   email: string;
   name: string;
-  role?: UserRole;
-  orders: Order[];
+  role: 'user' | 'admin';
+  orders?: Order[];
+  createdAt?: string;
 }
 
-export interface Order {
+export interface Review {
   id: string;
-  items: CartItem[];
-  totalPrice: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  productId: string;
+  userId: string;
+  rating: number;
+  comment: string;
   createdAt: string;
-  shipping: {
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
-  };
-  payment: {
-    method: 'card' | 'paypal' | 'other';
-    transactionId: string;
-  };
 }
-
-export type SortOption = 'newest' | 'oldest' | 'price-asc' | 'price-desc';

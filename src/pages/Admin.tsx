@@ -24,12 +24,16 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, A
 import { useProducts } from '../hooks/useProducts';
 
 const Admin = () => {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, logout, getAllUsers, updateOrderStatus } = useAuth();
   const { toast } = useToast();
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Use real users from auth context
+  const allUsers = getAllUsers();
+  const [filteredUsers, setFilteredUsers] = useState(allUsers);
 
   // New product form state
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
@@ -48,33 +52,14 @@ const Admin = () => {
     createdAt: new Date().toISOString().split('T')[0],
   });
 
-  // Sample orders for the demo
-  const [orders, setOrders] = useState<Partial<Order>[]>([
-    {
-      id: "ORD-001",
-      status: "pending",
-      createdAt: "2023-06-12",
-      totalPrice: 1250,
-    },
-    {
-      id: "ORD-002",
-      status: "delivered",
-      createdAt: "2023-06-11",
-      totalPrice: 780,
-    },
-    {
-      id: "ORD-003",
-      status: "processing",
-      createdAt: "2023-06-10",
-      totalPrice: 550,
-    }
-  ]);
-
-  // Filter products based on search term
-  const filteredProducts = products.filter(product => 
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    // Filter users based on search term
+    const filtered = allUsers.filter(user => 
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [searchTerm, allUsers]);
 
   // Redirect if not admin
   if (!isAdmin) {
@@ -199,23 +184,7 @@ const Admin = () => {
 
   const handleUpdateOrderStatus = (orderId: string, newStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') => {
     // Update the order status in the state
-    const updatedOrders = orders.map(order => {
-      if (order.id === orderId) {
-        return {
-          ...order,
-          status: newStatus,
-        };
-      }
-      return order;
-    });
-
-    setOrders(updatedOrders);
-
-    // Show success message
-    toast({
-      title: 'Статус заказа обновлен',
-      description: `Заказ #${orderId} теперь имеет статус "${newStatus}".`,
-    });
+    // Update the order status in the state
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -572,6 +541,58 @@ const Admin = () => {
             </Card>
           </TabsContent>
           
+          <TabsContent value="users" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Управление пользователями</CardTitle>
+                <CardDescription>
+                  Просмотр и управление учетными записями пользователей
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4">
+                  <Input
+                    placeholder="Поиск пользователей..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Имя</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Роль</TableHead>
+                      <TableHead>Заказов</TableHead>
+                      <TableHead>Дата регистрации</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>{user.name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            user.role === 'admin' 
+                              ? 'bg-purple-100 text-purple-800' 
+                              : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            {user.role === 'admin' ? 'Администратор' : 'Пользователь'}
+                          </span>
+                        </TableCell>
+                        <TableCell>{user.orders?.length || 0}</TableCell>
+                        <TableCell>
+                          {new Date(user.createdAt || '').toLocaleDateString('ru-RU')}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="orders" className="space-y-6">
             <Card>
               <CardHeader>
@@ -585,6 +606,7 @@ const Admin = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>ID заказа</TableHead>
+                      <TableHead>Клиент</TableHead>
                       <TableHead>Дата</TableHead>
                       <TableHead>Сумма</TableHead>
                       <TableHead>Статус</TableHead>
@@ -592,10 +614,13 @@ const Admin = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {orders.map((order) => (
+                    {allUsers.flatMap(user => user.orders || []).map((order) => (
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">{order.id}</TableCell>
-                        <TableCell>{order.createdAt}</TableCell>
+                        <TableCell>
+                          {allUsers.find(u => u.orders?.some(o => o.id === order.id))?.name || 'Unknown'}
+                        </TableCell>
+                        <TableCell>{new Date(order.createdAt).toLocaleDateString('ru-RU')}</TableCell>
                         <TableCell>{order.totalPrice} ₽</TableCell>
                         <TableCell>
                           <span className={`px-2 py-1 text-xs rounded-full ${
@@ -616,10 +641,18 @@ const Admin = () => {
                           <select 
                             className="px-2 py-1 border border-input rounded-md text-sm"
                             value={order.status}
-                            onChange={(e) => handleUpdateOrderStatus(
-                              order.id!, 
-                              e.target.value as 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
-                            )}
+                            onChange={(e) => {
+                              const result = updateOrderStatus(
+                                order.id, 
+                                e.target.value as Order['status']
+                              );
+                              if (result) {
+                                toast({
+                                  title: "Статус обновлен",
+                                  description: `Заказ #${order.id} обновлен`
+                                });
+                              }
+                            }}
                           >
                             <option value="pending">В обработке</option>
                             <option value="processing">Обрабатывается</option>
@@ -630,58 +663,6 @@ const Admin = () => {
                         </TableCell>
                       </TableRow>
                     ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="users" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Управление пользователями</CardTitle>
-                <CardDescription>
-                  Просмотр и управление учетными записями пользователей
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Имя</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Роль</TableHead>
-                      <TableHead>Действия</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>1</TableCell>
-                      <TableCell>Анна Смирнова</TableCell>
-                      <TableCell>anna@example.com</TableCell>
-                      <TableCell>
-                        <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                          Пользователь
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Button size="sm">Редактировать</Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>2</TableCell>
-                      <TableCell>Администратор</TableCell>
-                      <TableCell>admin@coffee.com</TableCell>
-                      <TableCell>
-                        <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">
-                          Администратор
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Button size="sm">Редактировать</Button>
-                      </TableCell>
-                    </TableRow>
                   </TableBody>
                 </Table>
               </CardContent>
