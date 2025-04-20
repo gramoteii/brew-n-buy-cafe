@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -56,6 +55,8 @@ const Profile = () => {
     }
   };
   
+  const hasOrders = user.orders && user.orders.length > 0;
+  
   return (
     <Layout>
       <motion.div
@@ -67,7 +68,6 @@ const Profile = () => {
         <h1 className="text-3xl font-serif mb-8">Личный кабинет</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Sidebar */}
           <div className="md:col-span-1">
             <div className="bg-white rounded-lg border border-border overflow-hidden">
               <div className="p-6 border-b border-border">
@@ -114,7 +114,6 @@ const Profile = () => {
             </div>
           </div>
           
-          {/* Main content */}
           <div className="md:col-span-3">
             {activeTab === 'profile' && (
               <div className="bg-white rounded-lg border border-border p-6">
@@ -162,7 +161,7 @@ const Profile = () => {
                   <h2 className="text-xl font-medium">История заказов</h2>
                 </div>
                 
-                {user.orders && user.orders.length > 0 ? (
+                {hasOrders ? (
                   <div className="divide-y divide-border">
                     {user.orders.map((order) => (
                       <div key={order.id} className="p-6">
