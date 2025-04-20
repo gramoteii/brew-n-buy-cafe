@@ -14,7 +14,10 @@ export const accessoryProducts: Product[] = [
     rating: 4.4,
     reviewCount: 45,
     calories: {
-      small: 0,
+      total: 0,
+      fat: 0,
+      protein: 0,
+      carbs: 0
     },
     ingredients: ['Металл', 'Кофейные зерна'],
     customizable: false,
@@ -33,7 +36,10 @@ export const accessoryProducts: Product[] = [
     rating: 4.6,
     reviewCount: 58,
     calories: {
-      small: 0,
+      total: 0,
+      fat: 0,
+      protein: 0,
+      carbs: 0
     },
     ingredients: ['Керамика'],
     customizable: false,

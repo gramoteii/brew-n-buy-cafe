@@ -31,11 +31,9 @@ const Admin = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Use real users from auth context
   const allUsers = getAllUsers();
   const [filteredUsers, setFilteredUsers] = useState(allUsers);
 
-  // New product form state
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
     name: '',
     shortDescription: '',
@@ -53,7 +51,6 @@ const Admin = () => {
   });
 
   useEffect(() => {
-    // Filter users based on search term
     const filtered = allUsers.filter(user => 
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -61,7 +58,6 @@ const Admin = () => {
     setFilteredUsers(filtered);
   }, [searchTerm, allUsers]);
 
-  // Redirect if not admin
   if (!isAdmin) {
     return <Navigate to="/auth" replace />;
   }
@@ -71,50 +67,53 @@ const Admin = () => {
   };
 
   const handleAddProduct = () => {
-    // Create a new product with a unique ID
-    const newId = (Math.max(...products.map(p => parseInt(p.id))) + 1).toString();
-    const productToAdd: Product = {
-      id: newId,
-      name: newProduct.name || '',
-      shortDescription: newProduct.shortDescription || '',
-      description: newProduct.description || '',
-      price: newProduct.price || 0,
-      category: newProduct.category || 'coffee',
-      image: newProduct.image || 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=1000&auto=format&fit=crop',
-      tags: newProduct.tags || [],
-      rating: newProduct.rating || 4.5,
-      reviewCount: newProduct.reviewCount || 0,
-      customizable: newProduct.customizable || false,
-      calories: {},
-      ingredients: newProduct.ingredients || [],
-      inStock: newProduct.inStock !== undefined ? newProduct.inStock : true,
-      createdAt: newProduct.createdAt || new Date().toISOString().split('T')[0],
-    };
+    if (newProduct.name && newProduct.category) {
+      const product: Product = {
+        id: Date.now().toString(),
+        name: newProduct.name,
+        description: newProduct.description || "",
+        shortDescription: newProduct.shortDescription || "",
+        price: Number(newProduct.price) || 0,
+        category: newProduct.category as ProductCategory,
+        image: newProduct.image || "/placeholder.svg",
+        tags: newProduct.tags?.split(",").map(tag => tag.trim()) || [],
+        rating: 0,
+        reviewCount: 0,
+        customizable: newProduct.customizable || false,
+        calories: {
+          total: 0,
+          fat: 0,
+          protein: 0,
+          carbs: 0
+        },
+        ingredients: newProduct.ingredients?.split(",").map(ingredient => ingredient.trim()) || [],
+        inStock: true,
+        createdAt: new Date().toISOString(),
+      };
+      
+      addProduct(product);
 
-    addProduct(productToAdd);
+      setNewProduct({
+        name: '',
+        shortDescription: '',
+        description: '',
+        price: 0,
+        category: 'coffee' as ProductCategory,
+        image: '',
+        tags: [],
+        rating: 4.5,
+        reviewCount: 0,
+        customizable: false,
+        ingredients: [],
+        inStock: true,
+        createdAt: new Date().toISOString().split('T')[0],
+      });
 
-    // Reset the form
-    setNewProduct({
-      name: '',
-      shortDescription: '',
-      description: '',
-      price: 0,
-      category: 'coffee' as ProductCategory,
-      image: '',
-      tags: [],
-      rating: 4.5,
-      reviewCount: 0,
-      customizable: false,
-      ingredients: [],
-      inStock: true,
-      createdAt: new Date().toISOString().split('T')[0],
-    });
-
-    // Show success message
-    toast({
-      title: 'Товар добавлен',
-      description: `Товар "${productToAdd.name}" успешно добавлен.`,
-    });
+      toast({
+        title: 'Товар добавлен',
+        description: `Товар "${product.name}" успешно добавлен.`,
+      });
+    }
   };
 
   const handleEditProduct = (product: Product) => {
@@ -160,7 +159,6 @@ const Admin = () => {
     setIsEditing(false);
     setSelectedProduct(null);
 
-    // Reset the form
     setNewProduct({
       name: '',
       shortDescription: '',
@@ -183,7 +181,6 @@ const Admin = () => {
   };
 
   const handleUpdateOrderStatus = (orderId: string, newStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') => {
-    // Update the order status in the state
     // Update the order status in the state
   };
 
@@ -211,8 +208,6 @@ const Admin = () => {
         inStock: (e.target as HTMLInputElement).checked,
       });
     } else if (id === 'productImage') {
-      // Assume this is a file input in a real app
-      // For now, just use a placeholder or the value
       setNewProduct({
         ...newProduct,
         image: value || 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=1000&auto=format&fit=crop',
@@ -224,6 +219,13 @@ const Admin = () => {
       });
     }
   };
+
+  const displayedProducts = searchTerm 
+    ? products.filter(product => 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : products;
 
   return (
     <Layout>
@@ -483,60 +485,62 @@ const Admin = () => {
                   />
                 </div>
                 
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Название</TableHead>
-                      <TableHead>Категория</TableHead>
-                      <TableHead>Цена</TableHead>
-                      <TableHead>В наличии</TableHead>
-                      <TableHead>Действия</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredProducts.map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>
-                          {product.category === 'coffee' && 'Кофе'}
-                          {product.category === 'sweets' && 'Сладости'}
-                          {product.category === 'accessory' && 'Аксессуары'}
-                          {product.category === 'gift' && 'Подарки'}
-                        </TableCell>
-                        <TableCell>{product.price} ₽</TableCell>
-                        <TableCell>{product.inStock ? 'Да' : 'Нет'}</TableCell>
-                        <TableCell className="space-x-2">
-                          <Button 
-                            size="sm" 
-                            onClick={() => handleEditProduct(product)}
-                          >
-                            Изменить
-                          </Button>
-                          
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button size="sm" variant="destructive">Удалить</Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Удалить товар?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Вы уверены, что хотите удалить товар "{product.name}"? Это действие нельзя отменить.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Отмена</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDeleteProduct(product.id)}>
-                                  Удалить
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Название</TableHead>
+                        <TableHead>Категория</TableHead>
+                        <TableHead>Цена</TableHead>
+                        <TableHead>В наличии</TableHead>
+                        <TableHead>Действия</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {displayedProducts.map((product) => (
+                        <TableRow key={product.id}>
+                          <TableCell className="font-medium">{product.name}</TableCell>
+                          <TableCell>
+                            {product.category === 'coffee' && 'Кофе'}
+                            {product.category === 'sweets' && 'Сладости'}
+                            {product.category === 'accessory' && 'Аксессуары'}
+                            {product.category === 'gift' && 'Подарки'}
+                          </TableCell>
+                          <TableCell>{product.price} ₽</TableCell>
+                          <TableCell>{product.inStock ? 'Да' : 'Нет'}</TableCell>
+                          <TableCell className="space-x-2">
+                            <Button 
+                              size="sm" 
+                              onClick={() => handleEditProduct(product)}
+                            >
+                              Изменить
+                            </Button>
+                            
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button size="sm" variant="destructive">Удалить</Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Удалить товар?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Вы уверены, что хотите удалить товар "{product.name}"? Это действие нельзя отменить.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Отмена</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteProduct(product.id)}>
+                                    Удалить
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

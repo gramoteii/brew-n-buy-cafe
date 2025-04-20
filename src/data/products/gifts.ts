@@ -14,7 +14,10 @@ export const giftProducts: Product[] = [
     rating: 4.7,
     reviewCount: 68,
     calories: {
-      small: 0,
+      total: 0,
+      fat: 0,
+      protein: 0,
+      carbs: 0
     },
     ingredients: ['Кофе разных сортов'],
     customizable: false,

@@ -14,7 +14,10 @@ export const sweetsProducts: Product[] = [
     rating: 4.8,
     reviewCount: 92,
     calories: {
-      small: 320,
+      total: 320,
+      fat: 18,
+      protein: 7,
+      carbs: 28
     },
     ingredients: ['Сыр', 'Печенье', 'Сахар', 'Яйца'],
     customizable: false,
@@ -33,7 +36,10 @@ export const sweetsProducts: Product[] = [
     rating: 4.9,
     reviewCount: 110,
     calories: {
-      small: 350,
+      total: 350,
+      fat: 21,
+      protein: 6,
+      carbs: 33
     },
     ingredients: ['Маскарпоне', 'Кофе', 'Какао', 'Печенье Савоярди'],
     customizable: false,
@@ -52,7 +58,10 @@ export const sweetsProducts: Product[] = [
     rating: 4.7,
     reviewCount: 45,
     calories: {
-      small: 250,
+      total: 250,
+      fat: 15,
+      protein: 3,
+      carbs: 30
     },
     ingredients: ['Топленое сливочное масло', 'Сахарная пудра', 'Мука'],
     customizable: false,
@@ -71,7 +80,10 @@ export const sweetsProducts: Product[] = [
     rating: 4.9,
     reviewCount: 78,
     calories: {
-      small: 400,
+      total: 400,
+      fat: 22,
+      protein: 8,
+      carbs: 45
     },
     ingredients: ['Слоеное тесто', 'Мед', 'Орехи', 'Пряности'],
     customizable: false,
@@ -90,7 +102,10 @@ export const sweetsProducts: Product[] = [
     rating: 4.6,
     reviewCount: 55,
     calories: {
-      small: 200,
+      total: 200,
+      fat: 1,
+      protein: 1,
+      carbs: 48
     },
     ingredients: ['Сахар', 'Крахмал', 'Розовая вода', 'Орехи'],
     customizable: false,
@@ -109,7 +124,10 @@ export const sweetsProducts: Product[] = [
     rating: 4.8,
     reviewCount: 40,
     calories: {
-      small: 280,
+      total: 280,
+      fat: 10,
+      protein: 2,
+      carbs: 50
     },
     ingredients: ['Мука', 'Сливочное масло', 'Мед'],
     customizable: false,
@@ -128,7 +146,10 @@ export const sweetsProducts: Product[] = [
     rating: 4.7,
     reviewCount: 35,
     calories: {
-      small: 300,
+      total: 300,
+      fat: 18,
+      protein: 5,
+      carbs: 32
     },
     ingredients: ['Мука', 'Пиво', 'Маргарин', 'Орехи', 'Сахар'],
     customizable: false,

@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -14,9 +15,17 @@ export interface Product {
   ingredients: string[];
   inStock: boolean;
   createdAt: string;
+  variations?: ProductVariation[];
 }
 
 export type ProductCategory = 'coffee' | 'sweets' | 'accessory' | 'gift';
+
+export type ProductSize = 'small' | 'medium' | 'large';
+
+export interface ProductVariation {
+  size: ProductSize;
+  price: number;
+}
 
 export interface Calories {
   total: number;
@@ -25,10 +34,17 @@ export interface Calories {
   carbs: number;
 }
 
+export interface ProductCustomization {
+  size?: ProductSize;
+  sugar?: number;
+  parvarda?: number;
+}
+
 export interface CartItem {
   product: Product;
   quantity: number;
   totalPrice: number;
+  customization: ProductCustomization;
 }
 
 export interface OrderItem {
@@ -62,3 +78,5 @@ export interface Review {
   comment: string;
   createdAt: string;
 }
+
+export type SortOption = 'newest' | 'oldest' | 'price-asc' | 'price-desc';

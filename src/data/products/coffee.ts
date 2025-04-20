@@ -20,9 +20,10 @@ export const coffeeProducts: Product[] = [
     ],
     customizable: true,
     calories: {
-      small: 68,
-      medium: 80,
-      large: 95,
+      total: 68,
+      fat: 5,
+      protein: 0,
+      carbs: 0
     },
     ingredients: ['Кофе', 'Вода'],
     inStock: true,
@@ -46,9 +47,10 @@ export const coffeeProducts: Product[] = [
     ],
     customizable: true,
     calories: {
-      small: 120,
-      medium: 150,
-      large: 180,
+      total: 120,
+      fat: 6,
+      protein: 7,
+      carbs: 12
     },
     ingredients: ['Кофе', 'Молоко', 'Какао'],
     inStock: true,
@@ -72,9 +74,10 @@ export const coffeeProducts: Product[] = [
     ],
     customizable: true,
     calories: {
-      small: 150,
-      medium: 180,
-      large: 210,
+      total: 150,
+      fat: 8,
+      protein: 9,
+      carbs: 13
     },
     ingredients: ['Кофе', 'Молоко'],
     inStock: true,
@@ -98,9 +101,10 @@ export const coffeeProducts: Product[] = [
     ],
     customizable: true,
     calories: {
-      small: 50,
-      medium: 60,
-      large: 70,
+      total: 50,
+      fat: 1,
+      protein: 0,
+      carbs: 0
     },
     ingredients: ['Кофе', 'Вода'],
     inStock: true,
@@ -124,9 +128,10 @@ export const coffeeProducts: Product[] = [
     ],
     customizable: true,
     calories: {
-      small: 250,
-      medium: 300,
-      large: 350,
+      total: 250,
+      fat: 12,
+      protein: 9,
+      carbs: 35
     },
     ingredients: ['Кофе', 'Молоко', 'Шоколад', 'Сливки'],
     inStock: true,
