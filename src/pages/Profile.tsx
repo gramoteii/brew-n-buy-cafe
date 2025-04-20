@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -55,7 +56,10 @@ const Profile = () => {
     }
   };
   
+  // Проверяем, что у пользователя есть массив заказов и он не пустой
   const hasOrders = user.orders && user.orders.length > 0;
+  
+  console.log('User orders:', user.orders); // Добавляем логирование для отладки
   
   return (
     <Layout>

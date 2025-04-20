@@ -18,6 +18,8 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ users, onUpdateStatus
   // Собираем все заказы из всех пользователей
   const allOrders = users.flatMap(user => user.orders || []);
   
+  console.log('All orders in admin:', allOrders); // Добавляем логирование для отладки
+  
   // Фильтруем заказы по поисковому запросу
   const filteredOrders = allOrders.filter(order => 
     order.id.includes(searchTerm) || 
