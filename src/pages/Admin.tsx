@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -76,7 +77,7 @@ const Admin = () => {
         price: Number(newProduct.price) || 0,
         category: newProduct.category as ProductCategory,
         image: newProduct.image || "/placeholder.svg",
-        tags: newProduct.tags?.split(",").map(tag => tag.trim()) || [],
+        tags: Array.isArray(newProduct.tags) ? newProduct.tags : [],
         rating: 0,
         reviewCount: 0,
         customizable: newProduct.customizable || false,
@@ -86,9 +87,10 @@ const Admin = () => {
           protein: 0,
           carbs: 0
         },
-        ingredients: newProduct.ingredients?.split(",").map(ingredient => ingredient.trim()) || [],
+        ingredients: Array.isArray(newProduct.ingredients) ? newProduct.ingredients : [],
         inStock: true,
         createdAt: new Date().toISOString(),
+        variations: []
       };
       
       addProduct(product);
@@ -211,6 +213,16 @@ const Admin = () => {
       setNewProduct({
         ...newProduct,
         image: value || 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=1000&auto=format&fit=crop',
+      });
+    } else if (id === 'productTags') {
+      setNewProduct({
+        ...newProduct,
+        tags: value.split(',').map(tag => tag.trim()),
+      });
+    } else if (id === 'productIngredients') {
+      setNewProduct({
+        ...newProduct,
+        ingredients: value.split(',').map(ingredient => ingredient.trim()),
       });
     } else {
       setNewProduct({
