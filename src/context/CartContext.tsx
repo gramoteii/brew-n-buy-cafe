@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CartItem, Product, ProductCustomization } from '../types';
 import { useToast } from '../hooks/use-toast';
@@ -23,25 +24,31 @@ export const useCart = () => {
   return context;
 };
 
+const CART_STORAGE_KEY = 'coffee-shop-cart';
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
 
   // Load cart from localStorage on initial render
   useEffect(() => {
-    const savedCart = localStorage.getItem('coffee-shop-cart');
-    if (savedCart) {
-      try {
-        setItems(JSON.parse(savedCart));
-      } catch (error) {
-        console.error('Error parsing cart data:', error);
+    const loadCartFromStorage = () => {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+      if (savedCart) {
+        try {
+          setItems(JSON.parse(savedCart));
+        } catch (error) {
+          console.error('Error parsing cart data:', error);
+        }
       }
-    }
+    };
+
+    loadCartFromStorage();
   }, []);
 
   // Save cart to localStorage when it changes
   useEffect(() => {
-    localStorage.setItem('coffee-shop-cart', JSON.stringify(items));
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
   const calculateItemPrice = (product: Product, quantity: number, customization: ProductCustomization) => {
@@ -65,15 +72,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return (basePrice + sugarPrice + parvardaPrice) * quantity;
   };
 
+  const findExistingItemIndex = (product: Product, customization: ProductCustomization) => {
+    return items.findIndex(
+      item => item.product.id === product.id && 
+              JSON.stringify(item.customization) === JSON.stringify(customization)
+    );
+  };
+
   const addToCart = (product: Product, quantity: number, customization: ProductCustomization) => {
     const totalPrice = calculateItemPrice(product, quantity, customization);
     
     setItems(prevItems => {
       // Check if item already exists in cart
-      const existingItemIndex = prevItems.findIndex(
-        item => item.product.id === product.id && 
-               JSON.stringify(item.customization) === JSON.stringify(customization)
-      );
+      const existingItemIndex = findExistingItemIndex(product, customization);
       
       if (existingItemIndex !== -1) {
         // Update existing item

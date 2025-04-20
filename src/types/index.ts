@@ -1,4 +1,5 @@
 
+// Product-related types
 export interface Product {
   id: string;
   name: string;
@@ -19,7 +20,6 @@ export interface Product {
 }
 
 export type ProductCategory = 'coffee' | 'sweets' | 'accessory' | 'gift';
-
 export type ProductSize = 'small' | 'medium' | 'large';
 
 export interface ProductVariation {
@@ -40,6 +40,7 @@ export interface ProductCustomization {
   parvarda?: number;
 }
 
+// Cart-related types
 export interface CartItem {
   product: Product;
   quantity: number;
@@ -47,20 +48,26 @@ export interface CartItem {
   customization: ProductCustomization;
 }
 
+// Order-related types
 export interface OrderItem {
   product: Product;
   quantity: number;
   totalPrice: number;
+  customization?: ProductCustomization;
 }
+
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
 export interface Order {
   id: string;
   items: OrderItem[];
   totalPrice: number;
   createdAt: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: OrderStatus;
+  userId?: string;
 }
 
+// User-related types
 export interface User {
   id: string;
   email: string;
@@ -70,6 +77,7 @@ export interface User {
   createdAt?: string;
 }
 
+// Review-related types
 export interface Review {
   id: string;
   productId: string;
@@ -79,4 +87,5 @@ export interface Review {
   createdAt: string;
 }
 
+// Filter and sort types
 export type SortOption = 'newest' | 'oldest' | 'price-asc' | 'price-desc';
