@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -114,6 +113,40 @@ const Admin = () => {
       };
       
       addProduct(product);
+      setNewProduct({
+        name: '',
+        shortDescription: '',
+        description: '',
+        price: 0,
+        category: 'coffee',
+        image: '',
+        tags: [],
+        rating: 4.5,
+        reviewCount: 0,
+        customizable: false,
+        calories: {
+          total: 0,
+          fat: 0,
+          protein: 0,
+          carbs: 0
+        },
+        ingredients: [],
+        inStock: true,
+        createdAt: new Date().toISOString(),
+      });
+    }
+  };
+
+  const handleUpdateProduct = () => {
+    if (selectedProduct && newProduct) {
+      const productToUpdate: Product = {
+        ...selectedProduct,
+        ...newProduct,
+        id: selectedProduct.id,
+      };
+      updateProduct(productToUpdate);
+      setIsEditing(false);
+      setSelectedProduct(null);
       setNewProduct({
         name: '',
         shortDescription: '',
