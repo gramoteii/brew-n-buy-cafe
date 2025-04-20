@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -8,7 +7,8 @@ import { motion } from 'framer-motion';
 import { User, LogOut, ShoppingBag, Clock, Package, Check, Truck, X } from 'lucide-react';
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { getUserOrders } = useOrders();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   
@@ -16,6 +16,11 @@ const Profile = () => {
     navigate('/auth');
     return null;
   }
+  
+  const userOrders = getUserOrders(user.id);
+  const hasOrders = userOrders.length > 0;
+  
+  console.log('User orders:', userOrders); // For debugging
   
   const handleLogout = () => {
     logout();
@@ -55,11 +60,6 @@ const Profile = () => {
         return status;
     }
   };
-  
-  // Проверяем, что у пользователя есть массив заказов и он не пустой
-  const hasOrders = user.orders && user.orders.length > 0;
-  
-  console.log('User orders:', user.orders); // Добавляем логирование для отладки
   
   return (
     <Layout>
@@ -167,7 +167,7 @@ const Profile = () => {
                 
                 {hasOrders ? (
                   <div className="divide-y divide-border">
-                    {user.orders.map((order) => (
+                    {userOrders.map((order) => (
                       <div key={order.id} className="p-6">
                         <div className="flex justify-between items-start mb-4">
                           <div>

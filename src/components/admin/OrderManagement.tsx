@@ -1,33 +1,28 @@
-
 import React, { useState } from 'react';
-import { Order, User } from '@/types';
+import { Order } from '@/types';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { useOrders } from '@/hooks/useOrders';
 
-interface OrderManagementProps {
-  users: User[];
-  onUpdateStatus: (orderId: string, status: Order['status']) => void;
-}
-
-const OrderManagement: React.FC<OrderManagementProps> = ({ users, onUpdateStatus }) => {
+const OrderManagement: React.FC = () => {
   const { toast } = useToast();
+  const { getAllOrders, updateOrderStatus } = useOrders();
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Собираем все заказы из всех пользователей
-  const allOrders = users.flatMap(user => user.orders || []);
+  // Get all orders
+  const allOrders = getAllOrders();
   
-  console.log('All orders in admin:', allOrders); // Добавляем логирование для отладки
+  console.log('All orders in admin:', allOrders); // For debugging
   
-  // Фильтруем заказы по поисковому запросу
+  // Filter orders by search term
   const filteredOrders = allOrders.filter(order => 
-    order.id.includes(searchTerm) || 
-    users.find(u => u.orders?.some(o => o.id === order.id))?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    order.id.includes(searchTerm)
   );
 
   const handleStatusChange = (orderId: string, status: Order['status']) => {
-    onUpdateStatus(orderId, status);
+    updateOrderStatus(orderId, status);
     toast({
       title: "Статус обновлен",
       description: `Заказ #${orderId} обновлен`
@@ -56,7 +51,7 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ users, onUpdateStatus
       <CardContent>
         <div className="mb-4">
           <Input
-            placeholder="Поиск заказа по ID или имени клиента..."
+            placeholder="Поиск заказа по ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-md"
@@ -67,7 +62,6 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ users, onUpdateStatus
           <TableHeader>
             <TableRow>
               <TableHead>ID заказа</TableHead>
-              <TableHead>Клиент</TableHead>
               <TableHead>Дата</TableHead>
               <TableHead>Сумма</TableHead>
               <TableHead>Статус</TableHead>
@@ -76,46 +70,40 @@ const OrderManagement: React.FC<OrderManagementProps> = ({ users, onUpdateStatus
           </TableHeader>
           <TableBody>
             {filteredOrders.length > 0 ? (
-              filteredOrders.map((order) => {
-                const orderUser = users.find(u => u.orders?.some(o => o.id === order.id));
-                return (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-medium">{order.id}</TableCell>
-                    <TableCell>
-                      {orderUser?.name || 'Неизвестный пользователь'}
-                    </TableCell>
-                    <TableCell>{new Date(order.createdAt).toLocaleDateString('ru-RU')}</TableCell>
-                    <TableCell>{order.totalPrice} ₽</TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        order.status === 'pending' ? 'bg-amber-100 text-amber-800' :
-                        order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                        order.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
-                        order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {getStatusText(order.status)}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <select 
-                        className="px-2 py-1 border border-input rounded-md text-sm"
-                        value={order.status}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value as Order['status'])}
-                      >
-                        <option value="pending">В обработке</option>
-                        <option value="processing">Обрабатывается</option>
-                        <option value="shipped">Отправлен</option>
-                        <option value="delivered">Доставлен</option>
-                        <option value="cancelled">Отменен</option>
-                      </select>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
+              filteredOrders.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell className="font-medium">{order.id}</TableCell>
+                  <TableCell>{new Date(order.createdAt).toLocaleDateString('ru-RU')}</TableCell>
+                  <TableCell>{order.totalPrice} ₽</TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      order.status === 'pending' ? 'bg-amber-100 text-amber-800' :
+                      order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                      order.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
+                      order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {getStatusText(order.status)}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <select 
+                      className="px-2 py-1 border border-input rounded-md text-sm"
+                      value={order.status}
+                      onChange={(e) => handleStatusChange(order.id, e.target.value as Order['status'])}
+                    >
+                      <option value="pending">В обработке</option>
+                      <option value="processing">Обрабатывается</option>
+                      <option value="shipped">Отправлен</option>
+                      <option value="delivered">Доставлен</option>
+                      <option value="cancelled">Отменен</option>
+                    </select>
+                  </TableCell>
+                </TableRow>
+              ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                   {allOrders.length === 0 
                     ? 'Пока нет заказов в системе' 
                     : 'Не найдено заказов по вашему запросу'}

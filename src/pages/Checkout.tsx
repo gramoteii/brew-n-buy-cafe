@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -8,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { motion } from 'framer-motion';
 import { Check, CreditCard, Truck, ChevronLeft } from 'lucide-react';
+import { Order } from '@/types';
+import { useOrders } from '@/hooks/useOrders';
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -39,6 +40,8 @@ const Checkout = () => {
     return !Object.values(errors).some(Boolean);
   };
 
+  const { addOrder } = useOrders(); // Add this line
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -54,29 +57,17 @@ const Checkout = () => {
     setIsSubmitting(true);
     
     try {
-      // In a real app, this would send the order to a backend
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Create order object (this would be sent to backend)
-      const order = {
+      // Create new order
+      const newOrder: Order = {
+        id: `order-${Date.now()}`,
         items,
         totalPrice,
         status: 'pending',
         createdAt: new Date().toISOString(),
-        userId: user?.id,
-        shipping: {
-          address,
-          city,
-          postalCode,
-          country: 'Россия',
-        },
-        payment: {
-          method: paymentMethod,
-          transactionId: `TR-${Date.now()}`,
-        },
+        userId: user?.id || '',
       };
       
-      // Clear cart and navigate to success page
+      addOrder(newOrder);
       clearCart();
       
       toast({
