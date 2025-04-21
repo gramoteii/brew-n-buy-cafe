@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -28,8 +29,6 @@ const Admin = () => {
     category: 'coffee',
     image: '',
     tags: [],
-    rating: 4.5,
-    reviewCount: 0,
     customizable: false,
     calories: {
       total: 0,
@@ -98,8 +97,6 @@ const Admin = () => {
         category: newProduct.category!,
         image: newProduct.image || "/placeholder.svg",
         tags: Array.isArray(newProduct.tags) ? newProduct.tags : [],
-        rating: 0,
-        reviewCount: 0,
         customizable: newProduct.customizable || false,
         calories: newProduct.calories || {
           total: 0,
@@ -121,8 +118,6 @@ const Admin = () => {
         category: 'coffee',
         image: '',
         tags: [],
-        rating: 4.5,
-        reviewCount: 0,
         customizable: false,
         calories: {
           total: 0,
@@ -155,8 +150,6 @@ const Admin = () => {
         category: 'coffee',
         image: '',
         tags: [],
-        rating: 4.5,
-        reviewCount: 0,
         customizable: false,
         calories: {
           total: 0,

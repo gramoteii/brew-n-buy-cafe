@@ -16,8 +16,6 @@ const initialOrders: Order[] = [
           category: "coffee",
           image: "/placeholder.svg",
           tags: ["hot", "classic"],
-          rating: 4.5,
-          reviewCount: 128,
           customizable: true,
           calories: {
             total: 0,
