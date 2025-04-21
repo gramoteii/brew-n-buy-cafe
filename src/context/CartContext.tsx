@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CartItem, Product, ProductCustomization } from '../types';
 import { useToast } from '../hooks/use-toast';
+import { useProducts } from '../hooks/useProducts';
 
 interface CartContextType {
   items: CartItem[];
@@ -29,6 +30,7 @@ const CART_STORAGE_KEY = 'coffee-shop-cart';
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
+  const { products } = useProducts();
 
   // Load cart from localStorage on initial render
   useEffect(() => {
@@ -50,6 +52,33 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
+
+  // Update cart items with latest product prices from products
+  useEffect(() => {
+    if (products.length > 0 && items.length > 0) {
+      const updatedItems = items.map(item => {
+        // Find the latest product data
+        const currentProductData = products.find(p => p.id === item.product.id);
+        
+        if (currentProductData) {
+          // Update the product in the cart with latest data
+          const updatedItem = {
+            ...item,
+            product: currentProductData,
+            totalPrice: calculateItemPrice(
+              currentProductData,
+              item.quantity,
+              item.customization
+            )
+          };
+          return updatedItem;
+        }
+        return item;
+      });
+      
+      setItems(updatedItems);
+    }
+  }, [products]);
 
   const calculateItemPrice = (product: Product, quantity: number, customization: ProductCustomization) => {
     let basePrice = product.price;

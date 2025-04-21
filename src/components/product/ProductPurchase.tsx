@@ -24,6 +24,11 @@ const ProductPurchase: React.FC<ProductPurchaseProps> = ({
   onQuantityChange, 
   onAddToCart 
 }) => {
+  // Calculate the total price based on current price, additions, and quantity
+  const totalPrice = (currentPrice + 
+    (sugar * productAdditions.sugar.price) + 
+    (parvarda * productAdditions.parvarda.price)) * quantity;
+    
   return (
     <>
       <div className="flex items-center space-x-4 mb-8">
@@ -58,9 +63,7 @@ const ProductPurchase: React.FC<ProductPurchaseProps> = ({
         <div className="flex justify-between">
           <span className="font-medium">Итого:</span>
           <span className="font-medium">
-            {(currentPrice + 
-              (sugar * productAdditions.sugar.price) + 
-              (parvarda * productAdditions.parvarda.price)) * quantity} ₽
+            {totalPrice} ₽
           </span>
         </div>
       </div>
