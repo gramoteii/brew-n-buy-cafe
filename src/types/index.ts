@@ -9,8 +9,8 @@ export interface Product {
   category: ProductCategory;
   image: string;
   tags: string[];
-  rating: number;
-  reviewCount: number;
+  // rating: number;          // УДАЛЕНО
+  // reviewCount: number;     // УДАЛЕНО
   customizable: boolean;
   calories: Calories;
   ingredients: string[];

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { sizeTranslations } from '@/data/products';
 import ReviewList from '@/components/ReviewList';
 import ReviewForm from '@/components/ReviewForm';
+import { useReviews } from '@/hooks/useReviews';
 
 interface ProductTabsProps {
   product: Product;
@@ -12,7 +13,9 @@ interface ProductTabsProps {
 
 const ProductTabs: React.FC<ProductTabsProps> = ({ product }) => {
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
-  
+  const { getReviewsByProductId } = useReviews();
+  const reviewCount = getReviewsByProductId(product.id).length;
+
   return (
     <div className="mt-16">
       <div className="border-b border-border">
@@ -37,16 +40,16 @@ const ProductTabs: React.FC<ProductTabsProps> = ({ product }) => {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
-            Отзывы ({product.reviewCount})
+            Отзывы ({reviewCount})
           </button>
         </div>
       </div>
-      
+
       <div className="py-8">
         {activeTab === 'description' ? (
           <div>
             <p className="mb-6">{product.description}</p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <h3 className="text-lg font-medium mb-3">Состав:</h3>
@@ -56,7 +59,7 @@ const ProductTabs: React.FC<ProductTabsProps> = ({ product }) => {
                   ))}
                 </ul>
               </div>
-              
+
               {(product.category === 'coffee' || product.category === 'sweets') && (
                 <div>
                   <h3 className="text-lg font-medium mb-3">Калорийность:</h3>

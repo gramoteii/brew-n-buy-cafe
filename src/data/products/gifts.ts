@@ -11,8 +11,8 @@ export const giftProducts: Product[] = [
     category: 'gift',
     image: '/images/products/coffee-gift-set.jpg',
     tags: ['new'],
-    rating: 4.7,
-    reviewCount: 68,
+    // rating: 4.7,
+    // reviewCount: 68,
     calories: {
       total: 0,
       fat: 0,

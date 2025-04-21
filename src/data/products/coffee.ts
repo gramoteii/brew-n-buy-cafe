@@ -11,8 +11,8 @@ export const coffeeProducts: Product[] = [
     category: 'coffee',
     image: '/images/products/espresso.jpg',
     tags: ['popular'],
-    rating: 4.5,
-    reviewCount: 62,
+    // rating: 4.5, // УДАЛЕНО
+    // reviewCount: 62, // УДАЛЕНО
     variations: [
       { size: 'small', price: 120 },
       { size: 'medium', price: 150 },
@@ -38,8 +38,8 @@ export const coffeeProducts: Product[] = [
     category: 'coffee',
     image: '/images/products/cappuccino.jpg',
     tags: ['popular', 'new'],
-    rating: 4.7,
-    reviewCount: 88,
+    // rating: 4.7,
+    // reviewCount: 88,
     variations: [
       { size: 'small', price: 160 },
       { size: 'medium', price: 190 },
@@ -65,8 +65,8 @@ export const coffeeProducts: Product[] = [
     category: 'coffee',
     image: '/images/products/latte.jpg',
     tags: ['popular'],
-    rating: 4.3,
-    reviewCount: 54,
+    // rating: 4.3,
+    // reviewCount: 54,
     variations: [
       { size: 'small', price: 160 },
       { size: 'medium', price: 190 },
@@ -92,8 +92,8 @@ export const coffeeProducts: Product[] = [
     category: 'coffee',
     image: '/images/products/americano.jpg',
     tags: [],
-    rating: 4.1,
-    reviewCount: 32,
+    // rating: 4.1,
+    // reviewCount: 32,
     variations: [
       { size: 'small', price: 120 },
       { size: 'medium', price: 150 },
@@ -119,8 +119,8 @@ export const coffeeProducts: Product[] = [
     category: 'coffee',
     image: '/images/products/mochaccino.jpg',
     tags: ['new'],
-    rating: 4.6,
-    reviewCount: 75,
+    // rating: 4.6,
+    // reviewCount: 75,
     variations: [
       { size: 'small', price: 200 },
       { size: 'medium', price: 230 },

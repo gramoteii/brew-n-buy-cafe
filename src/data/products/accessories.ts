@@ -11,8 +11,8 @@ export const accessoryProducts: Product[] = [
     category: 'accessory',
     image: '/images/products/coffee-bean-bracelet.jpg',
     tags: [],
-    rating: 4.4,
-    reviewCount: 45,
+    // rating: 4.4,
+    // reviewCount: 45,
     calories: {
       total: 0,
       fat: 0,
@@ -33,8 +33,8 @@ export const accessoryProducts: Product[] = [
     category: 'accessory',
     image: '/images/products/branded-mug.jpg',
     tags: ['popular'],
-    rating: 4.6,
-    reviewCount: 58,
+    // rating: 4.6,
+    // reviewCount: 58,
     calories: {
       total: 0,
       fat: 0,

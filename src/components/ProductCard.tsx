@@ -7,6 +7,7 @@ import { cn } from '../lib/utils';
 import { Heart, Star } from 'lucide-react';
 import { useFavorites } from '../hooks/useFavorites';
 import { toast } from '../hooks/use-toast';
+import { useReviews } from '../hooks/useReviews';
 
 interface ProductCardProps {
   product: Product;
@@ -16,20 +17,23 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, showFavoriteButton = false }) => {
   const { isInFavorites, toggleFavorite } = useFavorites();
   const isFavorite = isInFavorites(product.id);
-  
+  const { getAverageRating, getReviewsByProductId } = useReviews();
+  const avgRating = getAverageRating(product.id);
+  const reviewCount = getReviewsByProductId(product.id).length;
+
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     // Only toggle the favorite status for the current product
     toggleFavorite(product.id);
-    
+
     toast({
       title: isFavorite ? "Удалено из избранного" : "Добавлено в избранное",
       description: `${product.name} ${isFavorite ? "удален из" : "добавлен в"} избранное`,
     });
   };
-  
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -99,13 +103,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showFavoriteButton =
                   key={star}
                   size={16}
                   className={cn(
-                    star <= Math.round(product.rating) ? "text-amber-500 fill-amber-500" : "text-gray-300"
+                    star <= Math.round(avgRating) ? "text-amber-500 fill-amber-500" : "text-gray-300"
                   )}
                 />
               ))}
             </div>
             <span className="text-xs text-muted-foreground ml-2">
-              ({product.reviewCount})
+              ({reviewCount})
             </span>
           </div>
         </div>
@@ -115,3 +119,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showFavoriteButton =
 };
 
 export default ProductCard;
+

@@ -1,4 +1,3 @@
-
 import { Product } from '@/types';
 
 export const sweetsProducts: Product[] = [
@@ -11,8 +10,6 @@ export const sweetsProducts: Product[] = [
     category: 'sweets',
     image: '/images/products/cheesecake.jpg',
     tags: ['popular'],
-    rating: 4.8,
-    reviewCount: 92,
     calories: {
       total: 320,
       fat: 18,
@@ -33,8 +30,6 @@ export const sweetsProducts: Product[] = [
     category: 'sweets',
     image: '/images/products/tiramisu.jpg',
     tags: ['popular', 'new'],
-    rating: 4.9,
-    reviewCount: 110,
     calories: {
       total: 350,
       fat: 21,
@@ -55,8 +50,6 @@ export const sweetsProducts: Product[] = [
     category: 'sweets',
     image: '/images/products/kurabiye.jpg',
     tags: ['traditional'],
-    rating: 4.7,
-    reviewCount: 45,
     calories: {
       total: 250,
       fat: 15,
@@ -77,8 +70,6 @@ export const sweetsProducts: Product[] = [
     category: 'sweets',
     image: '/images/products/baklava.jpg',
     tags: ['traditional', 'popular'],
-    rating: 4.9,
-    reviewCount: 78,
     calories: {
       total: 400,
       fat: 22,
@@ -99,8 +90,6 @@ export const sweetsProducts: Product[] = [
     category: 'sweets',
     image: '/images/products/turkish-delight.jpg',
     tags: ['traditional'],
-    rating: 4.6,
-    reviewCount: 55,
     calories: {
       total: 200,
       fat: 1,
@@ -121,8 +110,6 @@ export const sweetsProducts: Product[] = [
     category: 'sweets',
     image: '/images/products/pishmanie.jpg',
     tags: ['traditional'],
-    rating: 4.8,
-    reviewCount: 40,
     calories: {
       total: 280,
       fat: 10,
@@ -143,8 +130,6 @@ export const sweetsProducts: Product[] = [
     category: 'sweets',
     image: '/images/products/rogaliki.jpg',
     tags: ['traditional'],
-    rating: 4.7,
-    reviewCount: 35,
     calories: {
       total: 300,
       fat: 18,
