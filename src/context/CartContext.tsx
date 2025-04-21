@@ -64,7 +64,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (currentProductData) {
           console.log(`Updating product ${currentProductData.name}: old price=${item.product.price}, new price=${currentProductData.price}`);
           
-          // Update the product in the cart with latest data
+          // Update the product in the cart with latest data and recalculate total price
           const updatedItem = {
             ...item,
             product: currentProductData,
@@ -175,9 +175,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setItems(prevItems => {
       const newItems = [...prevItems];
       if (newItems[itemIndex]) {
+        // Get the latest product data
+        const latestProduct = products.find(p => p.id === newItems[itemIndex].product.id) || newItems[itemIndex].product;
+        
+        newItems[itemIndex].product = latestProduct;
         newItems[itemIndex].quantity = quantity;
         newItems[itemIndex].totalPrice = calculateItemPrice(
-          newItems[itemIndex].product,
+          latestProduct,
           quantity,
           newItems[itemIndex].customization
         );
@@ -190,9 +194,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setItems(prevItems => {
       const newItems = [...prevItems];
       if (newItems[itemIndex]) {
+        // Get the latest product data
+        const latestProduct = products.find(p => p.id === newItems[itemIndex].product.id) || newItems[itemIndex].product;
+        
+        newItems[itemIndex].product = latestProduct;
         newItems[itemIndex].customization = customization;
         newItems[itemIndex].totalPrice = calculateItemPrice(
-          newItems[itemIndex].product,
+          latestProduct,
           newItems[itemIndex].quantity,
           customization
         );
