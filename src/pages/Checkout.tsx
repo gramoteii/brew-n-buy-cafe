@@ -6,9 +6,10 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { motion } from 'framer-motion';
-import { Check, CreditCard, Truck, ChevronLeft } from 'lucide-react';
+import { Check, Wallet, Truck, ChevronLeft } from 'lucide-react';
 import { Order } from '@/types';
 import { useOrders } from '@/hooks/useOrders';
+import CardForm from '@/components/checkout/CardForm';
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -16,13 +17,11 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Form states
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [postalCode, setPostalCode] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash');
 
-  // Validation states
   const [formErrors, setFormErrors] = useState({
     address: false,
     city: false,
@@ -40,8 +39,8 @@ const Checkout = () => {
     return !Object.values(errors).some(Boolean);
   };
 
-  const { addOrder } = useOrders(); // Add this line
-  
+  const { addOrder } = useOrders();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -57,7 +56,6 @@ const Checkout = () => {
     setIsSubmitting(true);
     
     try {
-      // Create new order
       const newOrder: Order = {
         id: `order-${Date.now()}`,
         items,
@@ -123,10 +121,8 @@ const Checkout = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Checkout form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit}>
-              {/* Shipping information */}
               <div className="bg-white rounded-lg border border-border shadow-sm overflow-hidden mb-6">
                 <div className="p-6 border-b border-border flex items-center">
                   <Truck size={20} className="mr-2 text-primary" />
@@ -192,14 +188,28 @@ const Checkout = () => {
                 </div>
               </div>
               
-              {/* Payment method */}
               <div className="bg-white rounded-lg border border-border shadow-sm overflow-hidden mb-6">
                 <div className="p-6 border-b border-border flex items-center">
-                  <CreditCard size={20} className="mr-2 text-primary" />
+                  <Wallet size={20} className="mr-2 text-primary" />
                   <h2 className="text-xl font-medium">Способ оплаты</h2>
                 </div>
                 
                 <div className="p-6 space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id="cash"
+                      name="paymentMethod"
+                      value="cash"
+                      checked={paymentMethod === 'cash'}
+                      onChange={() => setPaymentMethod('cash')}
+                      className="h-4 w-4 text-primary"
+                    />
+                    <label htmlFor="cash" className="block text-sm font-medium">
+                      Наличными при получении
+                    </label>
+                  </div>
+                  
                   <div className="flex items-center space-x-2">
                     <input
                       type="radio"
@@ -211,24 +221,11 @@ const Checkout = () => {
                       className="h-4 w-4 text-primary"
                     />
                     <label htmlFor="card" className="block text-sm font-medium">
-                      Банковская карта
+                      Банковской картой
                     </label>
                   </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      id="paypal"
-                      name="paymentMethod"
-                      value="paypal"
-                      checked={paymentMethod === 'paypal'}
-                      onChange={() => setPaymentMethod('paypal')}
-                      className="h-4 w-4 text-primary"
-                    />
-                    <label htmlFor="paypal" className="block text-sm font-medium">
-                      PayPal
-                    </label>
-                  </div>
+
+                  {paymentMethod === 'card' && <CardForm />}
                 </div>
               </div>
               
@@ -244,7 +241,6 @@ const Checkout = () => {
             </form>
           </div>
           
-          {/* Order summary */}
           <div>
             <div className="bg-white rounded-lg border border-border shadow-sm p-6 sticky top-24">
               <h2 className="text-xl font-medium mb-6">Ваш заказ</h2>
