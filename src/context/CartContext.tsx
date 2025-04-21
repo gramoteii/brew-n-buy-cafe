@@ -56,11 +56,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Update cart items with latest product prices from products
   useEffect(() => {
     if (products.length > 0 && items.length > 0) {
+      console.log('Updating cart items with latest product prices');
       const updatedItems = items.map(item => {
         // Find the latest product data
         const currentProductData = products.find(p => p.id === item.product.id);
         
         if (currentProductData) {
+          console.log(`Updating product ${currentProductData.name}: old price=${item.product.price}, new price=${currentProductData.price}`);
+          
           // Update the product in the cart with latest data
           const updatedItem = {
             ...item,
@@ -76,7 +79,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return item;
       });
       
-      setItems(updatedItems);
+      // Only update items if there are actual changes
+      const hasChanges = JSON.stringify(updatedItems) !== JSON.stringify(items);
+      if (hasChanges) {
+        console.log('Cart items updated with new prices');
+        setItems(updatedItems);
+      }
     }
   }, [products]);
 
@@ -109,25 +117,27 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addToCart = (product: Product, quantity: number, customization: ProductCustomization) => {
-    const totalPrice = calculateItemPrice(product, quantity, customization);
+    // Always get the latest product data from products array
+    const latestProduct = products.find(p => p.id === product.id) || product;
+    const totalPrice = calculateItemPrice(latestProduct, quantity, customization);
     
     setItems(prevItems => {
       // Check if item already exists in cart
-      const existingItemIndex = findExistingItemIndex(product, customization);
+      const existingItemIndex = findExistingItemIndex(latestProduct, customization);
       
       if (existingItemIndex !== -1) {
         // Update existing item
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex].quantity += quantity;
         updatedItems[existingItemIndex].totalPrice = calculateItemPrice(
-          product, 
+          latestProduct, 
           updatedItems[existingItemIndex].quantity, 
           customization
         );
         
         toast({
           title: 'Товар обновлен',
-          description: `${product.name} (${quantity}) добавлен в корзину`,
+          description: `${latestProduct.name} (${quantity}) добавлен в корзину`,
         });
         
         return updatedItems;
@@ -135,10 +145,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Add new item
         toast({
           title: 'Товар добавлен',
-          description: `${product.name} добавлен в корзину`,
+          description: `${latestProduct.name} добавлен в корзину`,
         });
         
-        return [...prevItems, { product, quantity, customization, totalPrice }];
+        return [...prevItems, { product: latestProduct, quantity, customization, totalPrice }];
       }
     });
   };

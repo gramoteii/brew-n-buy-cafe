@@ -50,6 +50,9 @@ const CartItem: React.FC<CartItemProps> = ({
           <div className="flex justify-between items-start">
             <div>
               <h3 className="font-medium text-lg mb-1">{item.product.name}</h3>
+              <p className="text-sm text-muted-foreground">
+                Цена: {item.product.price} ₽
+              </p>
               {item.customization.size && (
                 <p className="text-sm text-muted-foreground">
                   Размер: {formatSize(item.customization.size)}
