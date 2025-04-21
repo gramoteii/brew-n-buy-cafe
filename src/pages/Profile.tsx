@@ -1,13 +1,15 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
+import { useOrders } from '../hooks/useOrders';
 import { motion } from 'framer-motion';
 import { User, LogOut, ShoppingBag, Clock, Package, Check, Truck, X } from 'lucide-react';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { getUserOrders } = useOrders();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
@@ -18,7 +20,7 @@ const Profile = () => {
   }
   
   const userOrders = getUserOrders(user.id);
-  const hasOrders = userOrders.length > 0;
+  const hasOrders = userOrders && userOrders.length > 0;
   
   console.log('User orders:', userOrders); // For debugging
   

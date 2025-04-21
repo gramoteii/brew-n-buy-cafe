@@ -13,7 +13,7 @@ import OrderManagement from '../components/admin/OrderManagement';
 import UserManagement from '../components/admin/UserManagement';
 
 const Admin = () => {
-  const { user, isAdmin, logout, getAllUsers, updateOrderStatus } = useAuth();
+  const { user, isAdmin, logout, getAllUsers } = useAuth();
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -230,10 +230,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">
-            <OrderManagement 
-              users={allUsers}
-              onUpdateStatus={updateOrderStatus}
-            />
+            <OrderManagement />
           </TabsContent>
         </Tabs>
       </motion.div>
