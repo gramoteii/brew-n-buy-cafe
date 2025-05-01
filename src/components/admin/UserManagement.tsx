@@ -7,6 +7,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { debounce } from '@/lib/utils';
+import { useOrders } from '@/hooks/useOrders';
 
 interface UserManagementProps {
   users: User[];
@@ -18,6 +19,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ users }) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const { toast } = useToast();
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const { getUserOrders } = useOrders();
 
   // Debounce filter function to prevent "jittering"
   const updateFilteredUsers = useRef(
@@ -53,6 +55,12 @@ const UserManagement: React.FC<UserManagementProps> = ({ users }) => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value); // Immediate update to prevent input lag
+  };
+
+  // Get user's orders count
+  const getUserOrdersCount = (userId: string) => {
+    const userOrders = getUserOrders(userId);
+    return userOrders.length;
   };
 
   return (
@@ -97,7 +105,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ users }) => {
                           <p className="text-sm text-muted-foreground">{user.email}</p>
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {user.orders?.length || 0} заказов
+                          {getUserOrdersCount(user.id)} заказов
                         </div>
                       </div>
                     </button>
@@ -122,56 +130,59 @@ const UserManagement: React.FC<UserManagementProps> = ({ users }) => {
                   <div className="p-4">
                     <h4 className="font-medium text-lg mb-4">Заказы пользователя</h4>
                     
-                    {selectedUser.orders && selectedUser.orders.length > 0 ? (
-                      <div className="space-y-4">
-                        {selectedUser.orders.map((order) => (
-                          <div key={order.id} className="border border-border rounded-lg overflow-hidden">
-                            <div className="p-4 bg-secondary/30 flex justify-between items-center">
-                              <div>
-                                <p className="font-medium text-base">
-                                  Заказ #{order.id}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {new Date(order.createdAt).toLocaleDateString('ru-RU')}
-                                </p>
+                    {(() => {
+                      const userOrders = getUserOrders(selectedUser.id);
+                      return userOrders.length > 0 ? (
+                        <div className="space-y-4">
+                          {userOrders.map((order) => (
+                            <div key={order.id} className="border border-border rounded-lg overflow-hidden">
+                              <div className="p-4 bg-secondary/30 flex justify-between items-center">
+                                <div>
+                                  <p className="font-medium text-base">
+                                    Заказ #{order.id}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {new Date(order.createdAt).toLocaleDateString('ru-RU')}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <span className="font-medium block text-base">{order.totalPrice} ₽</span>
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                    order.status === 'pending' ? 'bg-amber-100 text-amber-800' :
+                                    order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                                    order.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
+                                    order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                                    'bg-red-100 text-red-800'
+                                  }`}>
+                                    {order.status === 'pending' && 'В обработке'}
+                                    {order.status === 'processing' && 'Обрабатывается'}
+                                    {order.status === 'shipped' && 'Отправлен'}
+                                    {order.status === 'delivered' && 'Доставлен'}
+                                    {order.status === 'cancelled' && 'Отменен'}
+                                  </span>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <span className="font-medium block text-base">{order.totalPrice} ₽</span>
-                                <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                  order.status === 'pending' ? 'bg-amber-100 text-amber-800' :
-                                  order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                                  order.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
-                                  order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                                  'bg-red-100 text-red-800'
-                                }`}>
-                                  {order.status === 'pending' && 'В обработке'}
-                                  {order.status === 'processing' && 'Обрабатывается'}
-                                  {order.status === 'shipped' && 'Отправлен'}
-                                  {order.status === 'delivered' && 'Доставлен'}
-                                  {order.status === 'cancelled' && 'Отменен'}
-                                </span>
+                              
+                              <div className="p-4">
+                                <h5 className="text-base font-medium mb-2">Товары в заказе:</h5>
+                                <ul className="text-base space-y-1">
+                                  {order.items.map((item, i) => (
+                                    <li key={i} className="flex justify-between">
+                                      <span>{item.product.name} × {item.quantity}</span>
+                                      <span>{item.totalPrice} ₽</span>
+                                    </li>
+                                  ))}
+                                </ul>
                               </div>
                             </div>
-                            
-                            <div className="p-4">
-                              <h5 className="text-base font-medium mb-2">Товары в заказе:</h5>
-                              <ul className="text-base space-y-1">
-                                {order.items.map((item, i) => (
-                                  <li key={i} className="flex justify-between">
-                                    <span>{item.product.name} × {item.quantity}</span>
-                                    <span>{item.totalPrice} ₽</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center p-8 text-base text-muted-foreground">
-                        У пользователя еще нет заказов
-                      </div>
-                    )}
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center p-8 text-base text-muted-foreground">
+                          У пользователя еще нет заказов
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ) : (

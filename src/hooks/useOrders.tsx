@@ -3,15 +3,47 @@ import { useState, useEffect } from 'react';
 import { Order, OrderItem } from '@/types';
 import { getStoredOrders, saveOrders } from '@/data/orders';
 import { useToast } from '@/hooks/use-toast';
+import { useUsers } from '@/hooks/useUsers';
 
 export function useOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const { toast } = useToast();
+  const { users, updateUser, findUserById } = useUsers();
 
   // Load orders on initial render
   useEffect(() => {
-    setOrders(getStoredOrders());
+    const loadedOrders = getStoredOrders();
+    setOrders(loadedOrders);
+    
+    // Sync orders with users
+    syncOrdersWithUsers(loadedOrders);
   }, []);
+
+  // Sync orders with users to ensure user.orders is up to date
+  const syncOrdersWithUsers = (currentOrders: Order[]) => {
+    // Group orders by userId
+    const ordersByUser: {[userId: string]: Order[]} = {};
+    
+    currentOrders.forEach(order => {
+      if (order.userId) {
+        if (!ordersByUser[order.userId]) {
+          ordersByUser[order.userId] = [];
+        }
+        ordersByUser[order.userId].push(order);
+      }
+    });
+    
+    // Update each user's orders
+    Object.keys(ordersByUser).forEach(userId => {
+      const user = findUserById(userId);
+      if (user) {
+        updateUser({
+          ...user,
+          orders: ordersByUser[userId]
+        });
+      }
+    });
+  };
 
   // Add new order
   const addOrder = (orderData: Omit<Order, 'id'>) => {
@@ -26,6 +58,18 @@ export function useOrders() {
     setOrders(prev => {
       const newOrders = [...prev, newOrder];
       saveOrders(newOrders);
+      
+      // Update user's orders
+      if (newOrder.userId) {
+        const user = findUserById(newOrder.userId);
+        if (user) {
+          updateUser({
+            ...user,
+            orders: [...(user.orders || []), newOrder]
+          });
+        }
+      }
+      
       return newOrders;
     });
     
@@ -40,10 +84,28 @@ export function useOrders() {
   // Update order status
   const updateOrderStatus = (orderId: string, status: Order['status']) => {
     setOrders(prev => {
+      const updatedOrder = prev.find(order => order.id === orderId);
       const newOrders = prev.map(order =>
         order.id === orderId ? { ...order, status } : order
       );
+      
       saveOrders(newOrders);
+      
+      // Update in user's orders as well
+      if (updatedOrder && updatedOrder.userId) {
+        const user = findUserById(updatedOrder.userId);
+        if (user && user.orders) {
+          const updatedUserOrders = user.orders.map(order => 
+            order.id === orderId ? { ...order, status } : order
+          );
+          
+          updateUser({
+            ...user,
+            orders: updatedUserOrders
+          });
+        }
+      }
+      
       return newOrders;
     });
   };
