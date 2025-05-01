@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
-import { Product } from '../types';
+import { Product, ProductCategory } from '../types'; // Add import for ProductCategory
 import { useProducts } from '../hooks/useProducts';
 import ProductForm from '../components/admin/ProductForm';
 import ProductList from '../components/admin/ProductList';

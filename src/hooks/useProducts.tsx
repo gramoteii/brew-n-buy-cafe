@@ -54,7 +54,8 @@ export function useProducts() {
       toast({
         title: "Предупреждение",
         description: `Товар с названием "${product.name}" уже существует.`,
-        variant: "warning"
+        // Change 'warning' to 'default' as 'warning' is not a valid variant
+        variant: "default"
       });
       return;
     }
