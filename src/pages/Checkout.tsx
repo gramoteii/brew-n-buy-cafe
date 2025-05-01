@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -13,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import CardForm from '../components/checkout/CardForm';
 import YooKassaForm from '../components/payment/YooKassaForm';
 import { useToast } from '@/hooks/use-toast';
+import { OrderItem, OrderStatus } from '@/types';
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -87,28 +87,24 @@ const Checkout = () => {
   
   const handlePaymentComplete = (status: 'success' | 'error', transactionId?: string) => {
     if (status === 'success') {
-      // Create order
+      // Create order items from cart items
+      const orderItems: OrderItem[] = items.map(item => ({
+        product: item.product,
+        quantity: item.quantity,
+        totalPrice: item.totalPrice,
+        customization: item.customization
+      }));
+      
+      // Create order without ID (it will be generated in the addOrder function)
       const orderData = {
         userId: user?.id || 'guest',
-        items: items.map(item => ({
-          productId: item.product.id,
-          name: item.product.name,
-          price: item.totalPrice / item.quantity,
-          quantity: item.quantity,
-          totalPrice: item.totalPrice,
-          customization: item.customization,
-        })),
-        orderDetails: {
-          ...formData,
-          paymentMethod: 'ЮKassa',
-          paymentStatus: 'paid',
-          transactionId: transactionId || '',
-        },
-        status: 'processing',
+        items: orderItems,
         totalPrice: totalPrice,
-        createdAt: new Date().toISOString(),
+        status: 'processing' as OrderStatus,
+        createdAt: new Date().toISOString()
       };
       
+      // Add the order and get back the generated ID
       const orderId = addOrder(orderData);
       
       // Clear cart

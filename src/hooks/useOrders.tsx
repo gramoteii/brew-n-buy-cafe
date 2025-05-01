@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Order } from '@/types';
+import { Order, OrderItem } from '@/types';
 import { getStoredOrders, saveOrders } from '@/data/orders';
 import { useToast } from '@/hooks/use-toast';
 
@@ -14,17 +14,27 @@ export function useOrders() {
   }, []);
 
   // Add new order
-  const addOrder = (order: Order) => {
+  const addOrder = (orderData: Omit<Order, 'id'>) => {
+    // Generate a unique order ID
+    const orderId = `order-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    
+    const newOrder: Order = {
+      ...orderData,
+      id: orderId
+    };
+    
     setOrders(prev => {
-      const newOrders = [...prev, order];
+      const newOrders = [...prev, newOrder];
       saveOrders(newOrders);
       return newOrders;
     });
     
     toast({
       title: "Заказ создан",
-      description: `Заказ #${order.id} успешно создан`
+      description: `Заказ #${orderId} успешно создан`
     });
+    
+    return orderId;
   };
 
   // Update order status
