@@ -14,9 +14,10 @@ const Products = () => {
   const [searchParams] = useSearchParams();
   const { products } = useProducts();
   const categoryParam = searchParams.get('category') as ProductCategory | null;
+  const sortParam = searchParams.get('sort') as SortOption | null;
   
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>(categoryParam || 'all');
-  const [sortOption, setSortOption] = useState<SortOption>('newest');
+  const [sortOption, setSortOption] = useState<SortOption>(sortParam || 'newest');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   
   // Apply proper sorting and filtering
@@ -31,29 +32,20 @@ const Products = () => {
     // Apply selected sort to filtered products
     switch (sortOption) {
       case 'newest':
-        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        result = result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
       case 'oldest':
-        result.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        result = result.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
         break;
       case 'price-asc':
-        result.sort((a, b) => a.price - b.price);
+        result = result.sort((a, b) => a.price - b.price);
         break;
       case 'price-desc':
-        result.sort((a, b) => b.price - a.price);
+        result = result.sort((a, b) => b.price - a.price);
         break;
     }
     
-    // After sorting, we can prioritize products with 'new' tag by bringing them to the top
-    // without disturbing the sort order within each group
-    if (sortOption !== 'newest' && sortOption !== 'oldest') {
-      const newProducts = result.filter(product => product.tags.includes('new'));
-      const otherProducts = result.filter(product => !product.tags.includes('new'));
-      
-      result = [...newProducts, ...otherProducts];
-    }
-    
-    setFilteredProducts(result);
+    setFilteredProducts([...result]);
   }, [selectedCategory, sortOption, products]);
   
   // Update category from URL params
@@ -63,15 +55,39 @@ const Products = () => {
     } else {
       setSelectedCategory('all');
     }
-  }, [categoryParam]);
+    
+    if (sortParam) {
+      setSortOption(sortParam);
+    }
+  }, [categoryParam, sortParam]);
   
   const handleCategoryChange = (category: ProductCategory | 'all') => {
     setSelectedCategory(category);
-    if (category === 'all') {
-      navigate('/products');
-    } else {
-      navigate(`/products?category=${category}`);
+    updateUrlParams(category, sortOption);
+  };
+  
+  const handleSortChange = (sort: SortOption) => {
+    setSortOption(sort);
+    updateUrlParams(selectedCategory, sort);
+  };
+  
+  // Update URL params to reflect current filter/sort state
+  const updateUrlParams = (category: ProductCategory | 'all', sort: SortOption) => {
+    const params = new URLSearchParams();
+    
+    if (category !== 'all') {
+      params.set('category', category);
     }
+    
+    if (sort !== 'newest') {
+      params.set('sort', sort);
+    }
+    
+    const queryString = params.toString();
+    navigate({
+      pathname: '/products',
+      search: queryString ? `?${queryString}` : ''
+    });
   };
   
   const categories = [
@@ -128,7 +144,7 @@ const Products = () => {
             <div>
               <select
                 value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as SortOption)}
+                onChange={(e) => handleSortChange(e.target.value as SortOption)}
                 className="w-full min-w-[200px] p-2.5 text-base border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary bg-white"
               >
                 {sortOptions.map(option => (
