@@ -38,7 +38,29 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const savedCart = localStorage.getItem(CART_STORAGE_KEY);
       if (savedCart) {
         try {
-          setItems(JSON.parse(savedCart));
+          const parsedCart = JSON.parse(savedCart);
+          
+          // If we have products available, update cart items with the latest product data
+          if (products.length > 0) {
+            const updatedCart = parsedCart.map((item: CartItem) => {
+              const currentProductData = products.find(p => p.id === item.product.id);
+              if (currentProductData) {
+                return {
+                  ...item,
+                  product: currentProductData,
+                  totalPrice: calculateItemPrice(
+                    currentProductData,
+                    item.quantity,
+                    item.customization
+                  )
+                };
+              }
+              return item;
+            });
+            setItems(updatedCart);
+          } else {
+            setItems(parsedCart);
+          }
         } catch (error) {
           console.error('Error parsing cart data:', error);
         }
@@ -46,7 +68,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     loadCartFromStorage();
-  }, []);
+  }, [products]);
 
   // Save cart to localStorage when it changes
   useEffect(() => {
@@ -79,7 +101,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return item;
       });
       
-      // Only update items if there are actual changes
+      // Only update items if there are actual changes to avoid infinite loop
       const hasChanges = JSON.stringify(updatedItems) !== JSON.stringify(items);
       if (hasChanges) {
         console.log('Cart items updated with new prices');
@@ -129,6 +151,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Update existing item
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex].quantity += quantity;
+        updatedItems[existingItemIndex].product = latestProduct; // Always use latest product data
         updatedItems[existingItemIndex].totalPrice = calculateItemPrice(
           latestProduct, 
           updatedItems[existingItemIndex].quantity, 
@@ -217,7 +240,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  // Calculate totals based on the current items state
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  
+  // Use the item's totalPrice which is recalculated anytime the product, quantity or customization changes
   const totalPrice = items.reduce((sum, item) => sum + item.totalPrice, 0);
 
   return (

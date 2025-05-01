@@ -1,10 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from './use-toast';
 
 export function useFavorites() {
   const { isAuthenticated, user } = useAuth();
   const [favorites, setFavorites] = useState<string[]>([]);
+  const { toast } = useToast();
   
   // Load favorites from localStorage on initial render
   useEffect(() => {
@@ -20,12 +22,21 @@ export function useFavorites() {
           setFavorites([]);
         }
       }
+    } else {
+      // Clear favorites if not authenticated
+      setFavorites([]);
     }
   }, [isAuthenticated, user]);
   
-  // Toggle a product in favorites
+  // Toggle a product in favorites with safeguards
   const toggleFavorite = (productId: string) => {
-    if (!isAuthenticated || !user) return;
+    if (!isAuthenticated || !user) {
+      toast({
+        title: "Необходима авторизация",
+        description: "Пожалуйста, войдите в систему чтобы добавлять товары в избранное",
+      });
+      return;
+    }
     
     const storageKey = `favorites_${user.id}`;
     
@@ -40,6 +51,7 @@ export function useFavorites() {
       
       // Save to localStorage
       localStorage.setItem(storageKey, JSON.stringify(newFavorites));
+      
       return newFavorites;
     });
   };
@@ -49,5 +61,14 @@ export function useFavorites() {
     return favorites.includes(productId);
   };
   
-  return { favorites, toggleFavorite, isInFavorites };
+  // Clear all favorites (useful for debugging)
+  const clearFavorites = () => {
+    if (isAuthenticated && user) {
+      const storageKey = `favorites_${user.id}`;
+      localStorage.removeItem(storageKey);
+      setFavorites([]);
+    }
+  };
+  
+  return { favorites, toggleFavorite, isInFavorites, clearFavorites };
 }

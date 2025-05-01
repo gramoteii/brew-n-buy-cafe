@@ -27,7 +27,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{isEditing ? 'Редактировать товар' : 'Добавить новый товар'}</CardTitle>
+        <CardTitle className="text-xl">{isEditing ? 'Редактировать товар' : 'Добавить новый товар'}</CardTitle>
         <CardDescription>
           {isEditing 
             ? 'Внесите изменения в информацию о товаре'
@@ -36,43 +36,50 @@ const ProductForm: React.FC<ProductFormProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="productName">Название</Label>
+            <Label htmlFor="name" className="text-base">Название</Label>
             <Input 
-              id="productName" 
+              id="name" 
+              name="name"
               value={product.name || ''} 
               onChange={onChange}
               placeholder="Введите название товара" 
+              className="text-base"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="productPrice">Цена (₽)</Label>
+            <Label htmlFor="price" className="text-base">Цена (₽)</Label>
             <Input 
-              id="productPrice" 
+              id="price" 
+              name="price"
               type="number" 
               value={product.price || 0} 
               onChange={onChange}
               placeholder="0" 
+              className="text-base"
             />
           </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="productShortDescription">Краткое описание</Label>
+          <Label htmlFor="shortDescription" className="text-base">Краткое описание</Label>
           <Input 
-            id="productShortDescription" 
+            id="shortDescription" 
+            name="shortDescription"
             value={product.shortDescription || ''} 
             onChange={onChange}
             placeholder="Краткое описание товара" 
+            className="text-base"
           />
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="productCategory">Категория</Label>
+          <Label htmlFor="category" className="text-base">Категория</Label>
           <select 
-            id="productCategory"
-            className="w-full px-3 py-2 border border-border rounded-md"
+            id="category"
+            name="category"
+            className="w-full px-3 py-2 border border-border rounded-md text-base"
             value={product.category || 'coffee'}
             onChange={onChange}
           >
@@ -84,55 +91,61 @@ const ProductForm: React.FC<ProductFormProps> = ({
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="productDescription">Описание</Label>
+          <Label htmlFor="description" className="text-base">Описание</Label>
           <Textarea 
-            id="productDescription"
+            id="description"
+            name="description"
             value={product.description || ''}
             onChange={onChange}
             placeholder="Введите подробное описание товара"
             rows={4}
+            className="text-base"
           />
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="productImage">Изображение</Label>
+          <Label htmlFor="image" className="text-base">Изображение</Label>
           <Input 
-            id="productImage" 
+            id="image" 
+            name="image"
             value={product.image || ''} 
             onChange={onChange}
             placeholder="URL изображения"
+            className="text-base"
           />
         </div>
 
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"
-            id="productInStock"
+            id="inStock"
+            name="inStock"
             checked={product.inStock || false}
             onChange={onChange}
-            className="h-4 w-4"
+            className="h-5 w-5"
           />
-          <Label htmlFor="productInStock">В наличии</Label>
+          <Label htmlFor="inStock" className="text-base">В наличии</Label>
         </div>
 
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"
-            id="productCustomizable"
+            id="customizable"
+            name="customizable"
             checked={product.customizable || false}
             onChange={onChange}
-            className="h-4 w-4"
+            className="h-5 w-5"
           />
-          <Label htmlFor="productCustomizable">Можно настроить</Label>
+          <Label htmlFor="customizable" className="text-base">Можно настроить</Label>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
         {isEditing ? (
-          <Button variant="outline" onClick={onCancel}>Отмена</Button>
+          <Button variant="outline" onClick={onCancel} className="text-base">Отмена</Button>
         ) : (
-          <Button variant="outline" onClick={onClear}>Очистить</Button>
+          <Button variant="outline" onClick={onClear} className="text-base">Очистить</Button>
         )}
-        <Button onClick={onSubmit}>
+        <Button onClick={onSubmit} className="text-base">
           {isEditing ? 'Сохранить изменения' : 'Добавить товар'}
         </Button>
       </CardFooter>

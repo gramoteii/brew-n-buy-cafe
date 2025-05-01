@@ -23,36 +23,37 @@ const Products = () => {
   useEffect(() => {
     let result = [...products];
     
+    // Filter by category if not "all"
     if (selectedCategory !== 'all') {
       result = result.filter(product => product.category === selectedCategory);
     }
     
-    // First, prioritize new products if they exist
-    const newProducts = result.filter(product => product.tags.includes('new'));
-    const otherProducts = result.filter(product => !product.tags.includes('new'));
-    
-    // Then apply selected sort to each group
+    // Apply selected sort to all products
     switch (sortOption) {
       case 'newest':
-        newProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        otherProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
       case 'oldest':
-        newProducts.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-        otherProducts.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        result.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
         break;
       case 'price-asc':
-        newProducts.sort((a, b) => a.price - b.price);
-        otherProducts.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => a.price - b.price);
         break;
       case 'price-desc':
-        newProducts.sort((a, b) => b.price - a.price);
-        otherProducts.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => b.price - a.price);
         break;
     }
     
-    // Combine the two arrays, with new products first
-    setFilteredProducts([...newProducts, ...otherProducts]);
+    // After sorting, we can prioritize products with 'new' tag by bringing them to the top
+    // without disturbing the sort order within each group
+    if (sortOption !== 'newest' && sortOption !== 'oldest') {
+      const newProducts = result.filter(product => product.tags.includes('new'));
+      const otherProducts = result.filter(product => !product.tags.includes('new'));
+      
+      result = [...newProducts, ...otherProducts];
+    }
+    
+    setFilteredProducts(result);
   }, [selectedCategory, sortOption, products]);
   
   // Update category from URL params

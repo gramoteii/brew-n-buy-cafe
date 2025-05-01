@@ -6,8 +6,9 @@ import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { Heart, Star } from 'lucide-react';
 import { useFavorites } from '../hooks/useFavorites';
-import { toast } from '../hooks/use-toast';
+import { useToast } from '../hooks/use-toast';
 import { useReviews } from '../hooks/useReviews';
+import { useAuth } from '../context/AuthContext';
 
 interface ProductCardProps {
   product: Product;
@@ -16,6 +17,8 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, showFavoriteButton = false }) => {
   const { isInFavorites, toggleFavorite } = useFavorites();
+  const { isAuthenticated } = useAuth();
+  const { toast } = useToast();
   const isFavorite = isInFavorites(product.id);
   const { getAverageRating, getReviewsByProductId } = useReviews();
   const avgRating = getAverageRating(product.id);
@@ -25,7 +28,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showFavoriteButton =
     e.preventDefault();
     e.stopPropagation();
 
-    // Only toggle the favorite status for the current product
+    if (!isAuthenticated) {
+      toast({
+        title: "Необходима авторизация",
+        description: "Пожалуйста, войдите в систему чтобы добавлять товары в избранное",
+      });
+      return;
+    }
+
+    // Toggle the favorite status for the current product
     toggleFavorite(product.id);
 
     toast({
@@ -119,4 +130,3 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showFavoriteButton =
 };
 
 export default ProductCard;
-
