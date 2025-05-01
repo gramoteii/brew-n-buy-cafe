@@ -43,11 +43,9 @@ export function useProducts() {
   }, []);
 
   const addProduct = (product: Product) => {
-    // Check for duplicate IDs
-    if (products.some(p => p.id === product.id)) {
-      const uniqueId = `${product.id}_${Date.now()}`;
-      product = { ...product, id: uniqueId };
-    }
+    // Generate a truly unique ID
+    const uniqueId = `p_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    product = { ...product, id: uniqueId };
 
     // Check for duplicate names
     if (products.some(p => p.name.toLowerCase() === product.name.toLowerCase())) {
@@ -71,6 +69,21 @@ export function useProducts() {
   };
 
   const updateProduct = (updatedProduct: Product) => {
+    // Check for duplicate names, but exclude the current product being edited
+    const isDuplicateName = products.some(p => 
+      p.name.toLowerCase() === updatedProduct.name.toLowerCase() && 
+      p.id !== updatedProduct.id
+    );
+    
+    if (isDuplicateName) {
+      toast({
+        title: "Предупреждение",
+        description: `Товар с названием "${updatedProduct.name}" уже существует.`,
+        variant: "default"
+      });
+      return;
+    }
+    
     const updatedProducts = products.map(p => 
       p.id === updatedProduct.id ? updatedProduct : p
     );

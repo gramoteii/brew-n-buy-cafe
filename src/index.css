@@ -79,10 +79,15 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+    font-size: 16px;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif tracking-tight;
+  }
+
+  p, span, div, button, input, select, textarea {
+    @apply text-base;
   }
 
   .container-custom {
@@ -112,6 +117,52 @@
   .page-transition-exit-active {
     @apply opacity-0 transition-opacity duration-300;
   }
+}
+
+/* Typography improvements */
+h1 {
+  @apply text-4xl sm:text-5xl font-medium;
+}
+
+h2 {
+  @apply text-3xl sm:text-4xl font-medium;
+}
+
+h3 {
+  @apply text-2xl sm:text-3xl font-medium;
+}
+
+h4 {
+  @apply text-xl sm:text-2xl font-medium;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.text-base {
+  font-size: 1rem;
+}
+
+.text-sm {
+  font-size: 0.9375rem;
+}
+
+.text-xs {
+  font-size: 0.875rem;
+}
+
+/* Increase font size in UI components */
+.btn, button {
+  @apply text-base;
+}
+
+.navbar-link {
+  @apply text-base sm:text-lg font-medium;
+}
+
+.card-title {
+  @apply text-xl sm:text-2xl;
 }
 
 /* Custom scroll bar */

@@ -27,6 +27,9 @@ const CartItem: React.FC<CartItemProps> = ({
   updateQuantity,
   removeFromCart
 }) => {
+  // Calculate current price to display
+  const currentItemPrice = item.totalPrice / item.quantity;
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -50,18 +53,18 @@ const CartItem: React.FC<CartItemProps> = ({
           <div className="flex justify-between items-start">
             <div>
               <h3 className="font-medium text-lg mb-1">{item.product.name}</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 Цена: {item.product.price} ₽
               </p>
               {item.customization.size && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base text-muted-foreground">
                   Размер: {formatSize(item.customization.size)}
                 </p>
               )}
               
               {/* Customizations for coffee */}
               {item.product.category === 'coffee' && item.product.customizable && (
-                <div className="mt-2 text-sm">
+                <div className="mt-2 text-base">
                   {item.customization.sugar && item.customization.sugar > 0 && (
                     <div className="flex justify-between text-muted-foreground">
                       <span>Сахар (×{item.customization.sugar})</span>
@@ -108,7 +111,7 @@ const CartItem: React.FC<CartItemProps> = ({
             </div>
             
             {/* Price */}
-            <div className="font-medium">
+            <div className="font-medium text-base">
               {item.totalPrice} ₽
             </div>
           </div>

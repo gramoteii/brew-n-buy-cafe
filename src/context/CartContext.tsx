@@ -40,11 +40,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const parsedCart = JSON.parse(savedCart);
           
-          // If we have products available, update cart items with the latest product data
+          // Always update cart with the latest product data
           if (products.length > 0) {
             const updatedCart = parsedCart.map((item: CartItem) => {
               const currentProductData = products.find(p => p.id === item.product.id);
               if (currentProductData) {
+                // Recalculate the total price with the latest product data
                 return {
                   ...item,
                   product: currentProductData,
@@ -84,9 +85,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const currentProductData = products.find(p => p.id === item.product.id);
         
         if (currentProductData) {
-          console.log(`Updating product ${currentProductData.name}: old price=${item.product.price}, new price=${currentProductData.price}`);
+          // Check if price has changed
+          if (currentProductData.price !== item.product.price) {
+            console.log(`Updating product ${currentProductData.name}: old price=${item.product.price}, new price=${currentProductData.price}`);
+          }
           
-          // Update the product in the cart with latest data and recalculate total price
+          // Always update the product in the cart with latest data and recalculate total price
           const updatedItem = {
             ...item,
             product: currentProductData,

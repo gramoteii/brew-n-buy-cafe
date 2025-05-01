@@ -28,7 +28,7 @@ const Products = () => {
       result = result.filter(product => product.category === selectedCategory);
     }
     
-    // Apply selected sort to all products
+    // Apply selected sort to filtered products
     switch (sortOption) {
       case 'newest':
         result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -99,13 +99,13 @@ const Products = () => {
       >
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-serif mb-2">
+            <h1 className="text-3xl md:text-5xl font-serif mb-2">
               {selectedCategory === 'all' ? 'Все продукты' : 
                selectedCategory === 'coffee' ? 'Кофе' :
                selectedCategory === 'sweets' ? 'Сладости' :
                selectedCategory === 'accessory' ? 'Аксессуары' : 'Подарки'}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-lg">
               {filteredProducts.length} товаров
             </p>
           </div>
@@ -115,7 +115,7 @@ const Products = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => handleCategoryChange(e.target.value as ProductCategory | 'all')}
-                className="w-full min-w-[200px] p-2.5 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                className="w-full min-w-[200px] p-2.5 text-base border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary bg-white"
               >
                 {categories.map(option => (
                   <option key={option.value} value={option.value}>
@@ -129,7 +129,7 @@ const Products = () => {
               <select
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value as SortOption)}
-                className="w-full min-w-[200px] p-2.5 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                className="w-full min-w-[200px] p-2.5 text-base border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary bg-white"
               >
                 {sortOptions.map(option => (
                   <option key={option.value} value={option.value}>
